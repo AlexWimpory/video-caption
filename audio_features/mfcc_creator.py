@@ -22,5 +22,5 @@ def visualise(mfccs, title):
 
 
 if __name__ == '__main__':
-    thunder = create_mfcc('data/birds.wav')
-    visualise(thunder, 'Birds')
+    soundfile = create_mfcc('data/birds.wav')
+    visualise(soundfile, 'Birds')

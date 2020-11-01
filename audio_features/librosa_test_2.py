@@ -5,7 +5,7 @@ import numpy as np
 ms.use('seaborn-muted')
 import librosa.display
 
-filename = 'birds'
+filename = 'gun'
 y, sr = librosa.load(f'data\\{filename}.wav')
 
 # Let's make and display a mel-scaled power (energy-squared) spectrogram
