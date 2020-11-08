@@ -26,4 +26,4 @@ def vosk_model(address):
 
 
 if __name__ == '__main__':
-    vosk_model('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198\\19-198-0001.wav')
+    vosk_model('data/19-198-0001.wav')

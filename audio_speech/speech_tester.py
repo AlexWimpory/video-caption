@@ -14,7 +14,8 @@ speech_recogniser = SpeechRecogniser()
 
 def compare_speech(groundtruth, filename):
     base_filename = os.path.splitext(os.path.basename(filename))[0]
-    words, _ = speech_recogniser.process_file(filename)
+    results = speech_recogniser.process_file(filename)
+    words = [result['word'] for result in results]
     from_audio = ' '.join(words).upper()
     gtp = GroundtruthReader(groundtruth)
     from_groundtruth = gtp.lookup_filename(base_filename)
@@ -29,7 +30,8 @@ def write_speech_results(path, extenstion, groundtruth):
         def write_results(filename):
             base_filename = os.path.splitext(os.path.basename(filename))[0]
             from_groundtruth = gtp.lookup_filename(base_filename)
-            words, _ = speech_recogniser.process_file(filename)
+            results = speech_recogniser.process_file(filename)
+            words = [result['word'] for result in results]
             from_audio = ' '.join(words).upper()
             lev = levenshtein(from_audio, from_groundtruth)
             writer.writerow([base_filename, lev, from_audio, from_groundtruth])
@@ -59,7 +61,8 @@ def compare_noise(groundtruth, filename, snr_start, increment, snr_end):
         writer.writerow([None, 0, from_groundtruth])
         while snr_start >= snr_end:
             add_noise.add_awgn(filename, snr_start)
-            words, _ = speech_recogniser.process_file('data/speech_noisy_fixed.wav')
+            results = speech_recogniser.process_file('data/speech_noisy_fixed.wav')
+            words = [result['word'] for result in results]
             from_audio = ' '.join(words).upper()
             lev = levenshtein(from_audio, from_groundtruth)
             writer.writerow([snr_start, lev, from_audio])
