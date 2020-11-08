@@ -25,7 +25,12 @@ class SpeechRecogniser:
             if len(data) == 0:
                 break
             if rec.AcceptWaveform(data):
-                # if we reach here we have accepted the translation of a section of text
-                results.extend(json.loads(rec.Result())['result'])
-        results.extend(json.loads(rec.FinalResult())['result'])
+                result = json.loads(rec.Result())
+                # result can contain an empty text string but no result list
+                if len(result['text']) > 0:
+                    # if we reach here we have accepted the translation of a section of text
+                    results.extend(result['result'])
+        result = json.loads(rec.FinalResult())
+        if len(result['text']) > 0:
+            results.extend(result['result'])
         return results

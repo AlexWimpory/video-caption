@@ -29,8 +29,14 @@ def save_to_srt(results, file_name):
     subs.save(file_name)
 
 
-def srt_to_video(file_name_wav, file_name_srt, file_name_image, file_name_video):
+def srt_to_video_using_audio(file_name_wav, file_name_srt, file_name_image, file_name_video):
     subprocess.call(f"ffmpeg -y -i \"{file_name_wav}\" -loop 1 -i {file_name_image}"
                     f" -c:v libx264 -r 24 -vf \"subtitles='{file_name_srt}'\" -pix_fmt yuv420p -c:a aac -map"
                     f" 1:v -map 0:a -shortest {file_name_video}", shell=True)
+
+
+def add_srt_to_video(file_name_srt, file_name_video, file_name_output_video):
+    subprocess.call(f"ffmpeg -y -i \"{file_name_video}\" -i \"{file_name_srt}\""
+                    f" -map 0:v -map 0:a -c copy -map 1 -c:s:0 mov_text -metadata:s:s:0 language=eng"
+                    f" \"{file_name_output_video}\"", shell=True)
 
