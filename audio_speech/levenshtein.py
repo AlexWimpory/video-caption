@@ -1,5 +1,10 @@
 import numpy as np
 
+"""
+Calculates the Levenshtein distance of 2 input strings
+Levenshtein distance = The number of changes required to make 2 strings the same
+"""
+
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -24,9 +29,8 @@ def levenshtein(seq1, seq2):
                     matrix[x - 1, y - 1] + 1,
                     matrix[x, y - 1] + 1
                 )
-    # print (matrix)
     return matrix[size_x - 1, size_y - 1]
 
 
 if __name__ == '__main__':
-    print(levenshtein('dsddd ddd', 'ddddh  hddd'))
+    print(levenshtein('abc def', 'abcdjf'))

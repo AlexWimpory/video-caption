@@ -1,4 +1,5 @@
 import csv
+import ast
 
 class GroundtruthReader:
     def __init__(self, groundtruth_filename):
@@ -6,7 +7,10 @@ class GroundtruthReader:
         with open(groundtruth_filename, 'r') as fin:
             reader = csv.reader(fin)
             for row in reader:
-                self.groundtruth_records[row[0]] = row[1]
+                if row[1].startswith('[') and row[1].endswith(']'):
+                    self.groundtruth_records[row[0]] = ast.literal_eval(row[1])
+                else:
+                    self.groundtruth_records[row[0]] = row[1]
 
 
     def lookup_filename(self, filename):
@@ -14,8 +18,8 @@ class GroundtruthReader:
 
 
 if __name__ == '__main__':
-    #gtp = GroundtruthReader('../audio_features/data/fsd50k_dev_groundtruth.csv')
-    #print(gtp.lookup_filename('407490'))
-    gtp = GroundtruthReader('../audio_speech/data/librispeech_groundtruth.csv')
-    print(gtp.lookup_filename("19-198-0009"))
+    gtp = GroundtruthReader('../audio_features/data/fsd50k_dev_groundtruth.csv')
+    print(gtp.lookup_filename('407490'))
+    #gtp = GroundtruthReader('../audio_speech/data/librispeech_groundtruth.csv')
+    #print(gtp.lookup_filename("19-198-0009"))
 

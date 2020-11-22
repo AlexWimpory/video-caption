@@ -1,9 +1,12 @@
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import wave
 import json
-
 import config
 
+"""
+Module that runs the Vosk model on the input file, returning words and timings
+Model can be found at: https://alphacephei.com/vosk/install
+"""
 
 class SpeechRecogniser:
     """Simple class that uses Vosk to process a file for speech recognition"""
@@ -21,14 +24,14 @@ class SpeechRecogniser:
         results = []
         while True:
             data = wf.readframes(config.frame_to_read)
-            # if the data we have read is empty then we are at the end of the file
+            # If the data we have read is empty then we are at the end of the file
             if len(data) == 0:
                 break
             if rec.AcceptWaveform(data):
                 result = json.loads(rec.Result())
-                # result can contain an empty text string but no result list
+                # Result can contain an empty text string but no result list
                 if len(result['text']) > 0:
-                    # if we reach here we have accepted the translation of a section of text
+                    # If we reach here we have accepted the translation of a section of text
                     results.extend(result['result'])
         result = json.loads(rec.FinalResult())
         if len(result['text']) > 0:

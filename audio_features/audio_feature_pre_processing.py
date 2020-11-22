@@ -1,0 +1,33 @@
+from audio_processing.ground_truth_processor import GroundtruthReader
+from mfcc_creator import create_mfcc, mfcc_mean
+from file_utils import return_from_path
+from functools import partial
+import os
+import pickle
+
+
+def prepare_audio_feature(groundtruth, file_name):
+    """Generate an MFCC and look up the labels"""
+    base_file_name = os.path.splitext(os.path.basename(file_name))[0]
+    gtp = GroundtruthReader(groundtruth)
+    from_groundtruth = gtp.lookup_filename(base_file_name)
+    mfcc = mfcc_mean(create_mfcc(file_name))
+    return {'mfcc': mfcc, 'labels': from_groundtruth}
+
+
+def save_features(features, file_name):
+    with open(file_name, 'wb') as file:
+        pickle.dump(features, file)
+
+
+def load_features(file_name):
+    with open(file_name, 'rb') as file:
+        return pickle.load(file)
+
+
+if __name__ == '__main__':
+    prepare_audio_feature_groundtruth = partial(prepare_audio_feature, 'data/UrbanSound8K_groundtruth.csv')
+    ftrs = return_from_path(prepare_audio_feature_groundtruth,
+                            'D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio',
+                            '.wav')
+    save_features(ftrs, 'data/UrbanSound8K_all.data')
