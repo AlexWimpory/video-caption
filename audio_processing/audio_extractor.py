@@ -11,4 +11,4 @@ def extract_audio(file_name, audio_directory):
 
 
 if __name__ == '__main__':
-    extract_audio('D:\\TED\\BruceAylward_2011-480p.mp4', 'D:\\TED')
+    extract_audio('D:\\TED\\SheenaIyengar_2010G-480p.mp4', 'D:\\TED')

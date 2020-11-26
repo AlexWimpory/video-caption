@@ -2,13 +2,11 @@ import csv
 import os
 import re
 from os.path import splitext, basename
-
 from num2words import num2words
-
 from file_utils import append_to_file_name
 
 
-def process_tut_groundtruth():
+def process_tut_ground_truth():
     """Process TUT record to standard format"""
     with open('../audio_features/data/tut_meta.txt', 'r') as fin, open('../audio_features/data/tut_groundtruth.csv', 'w', newline='') as fout:
         reader = csv.reader(fin, delimiter='\t')
@@ -17,7 +15,7 @@ def process_tut_groundtruth():
             writer.writerow([row[0].strip().replace('audio/', '').replace('.wav', ''), [row[1].strip()]])
 
 
-def process_fsd50k_groundtruth():
+def process_fsd50k_ground_truth():
     """Process FSD50K record to standard format"""
     with open('../audio_features/data/fsd50k_dev.csv', 'r') as fin, open(
             '../audio_features/data/fsd50k_dev_groundtruth.csv', 'w', newline='') as fout:
@@ -28,7 +26,7 @@ def process_fsd50k_groundtruth():
             writer.writerow([row[0].strip(), labels])
 
 
-def process_librispeech_groundtruth():
+def process_librispeech_ground_truth():
     """Process librispeech record to standard format"""
     with open('../audio_speech/data/librispeech_groundtruth.csv', 'w', newline='') as fout:
         path = 'D:\\Audio Speech\\LibriSpeech\\train-clean-100'
@@ -43,7 +41,7 @@ def process_librispeech_groundtruth():
                             writer.writerow([address, data.strip()])
 
 
-def process_urbansound8k_groundtruth():
+def process_urbansound8k_ground_truth():
     """Process urbansound8k record to standard format"""
     with open('../audio_features/data/UrbanSound8K.csv', 'r') as fin, open(
             '../audio_features/data/UrbanSound8K_groundtruth.csv', 'w', newline='') as fout:
@@ -53,7 +51,7 @@ def process_urbansound8k_groundtruth():
             writer.writerow([row[0].strip().replace('.wav', ''), [row[7].strip()]])
 
 
-def process_ted_groundtruth(path, audio_file_path):
+def process_ted_ground_truth(path, audio_file_path):
     new_file_name = append_to_file_name(path, '_groundtruth', '.csv')
     with open(path, 'r') as fin, open( new_file_name, 'w') as fout:
         names = []
@@ -83,8 +81,8 @@ def process_ted_groundtruth(path, audio_file_path):
 
 
 if __name__ == '__main__':
-    #process_tut_groundtruth()
-    #process_fsd50k_groundtruth()
-    #process_librispeech_groundtruth()
-    #process_urbansound8k_groundtruth()
-    process_ted_groundtruth('D:\\TED\\BruceAylward_2011-480p-Transcript.txt', 'D:\\TED\\BruceAylward_2011-480p.wav')
+    #process_tut_ground_truth()
+    #process_fsd50k_ground_truth()
+    #process_librispeech_ground_truth()
+    #process_urbansound8k_ground_truth()
+    process_ted_ground_truth('D:\\TED\\SheenaIyengar_2010G-480p-Transcript.txt', 'D:\\TED\\SheenaIyengar_2010G-480p.wav')

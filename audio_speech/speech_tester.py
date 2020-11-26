@@ -126,9 +126,9 @@ if __name__ == '__main__':
     # write_speech_results('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\6836',
     #                      '.wav',
     #                      '../audio_speech/data/librispeech_groundtruth.csv')
-    write_speech_results('D:\\TED\\AlGore_2016-480p.wav',
+    write_speech_results('D:\\TED\\SheenaIyengar_2010G-480p.wav',
                          '.wav',
-                         'D:\\TED\\AlGore_2016-480p-groundtruth.csv')
+                         'D:\\TED\\SheenaIyengar_2010G-480p-Transcript_groundtruth.csv')
     end = time.time()
     print(end - start)
 

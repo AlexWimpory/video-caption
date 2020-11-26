@@ -5,7 +5,6 @@ Calculates the Levenshtein distance of 2 input strings
 Levenshtein distance = The number of changes required to make 2 strings the same
 """
 
-
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
