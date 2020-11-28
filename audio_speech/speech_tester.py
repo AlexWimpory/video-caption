@@ -121,16 +121,16 @@ if __name__ == '__main__':
     # compare_speech_groundtruth = partial(compare_speech, '../audio_speech/data/librispeech_groundtruth.csv')
     # apply_to_path(compare_speech_groundtruth, 'D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198', '.wav')
 
-    # Write speech test
-    start = time.time()
-    # write_speech_results('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\6836',
+    # # Write speech test
+    # start = time.time()
+    # write_speech_results('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198',
     #                      '.wav',
     #                      '../audio_speech/data/librispeech_groundtruth.csv')
-    write_speech_results('D:\\TED\\SheenaIyengar_2010G-480p.wav',
-                         '.wav',
-                         'D:\\TED\\SheenaIyengar_2010G-480p-Transcript_groundtruth.csv')
-    end = time.time()
-    print(end - start)
+    # # write_speech_results('D:\\TED\\SheenaIyengar_2010G-480p.wav',
+    # #                      '.wav',
+    # #                      'D:\\TED\\SheenaIyengar_2010G-480p-Transcript_groundtruth.csv')
+    # end = time.time()
+    # print(end - start)
 
     # Format speech file
     format_speech_csv('data/speech_results.csv')

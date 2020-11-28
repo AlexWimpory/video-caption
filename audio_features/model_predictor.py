@@ -17,7 +17,7 @@ class ModelPredictor:
         predicted_class = self._le.inverse_transform(predicted_vector)
         results.predicted_class = predicted_class[0]
 
-        predicted_probability_vector = self._model.predict_proba(mfcc)
+        predicted_probability_vector = self._model.predict(mfcc)
         predicted_probability = predicted_probability_vector[0]
 
         for i in range(len(predicted_probability)):
@@ -35,5 +35,5 @@ class ModelPredictorResults:
 
 if __name__ == '__main__':
     predictor = ModelPredictor(model_name='model_1')
-    res = predictor.predict('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold2\\178521-2-0-86.wav')
+    res = predictor.predict('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold10\\2937-1-0-0.wav')
     print(json.dumps(res.__dict__))

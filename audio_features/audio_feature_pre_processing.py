@@ -1,3 +1,5 @@
+from pandas import DataFrame
+
 from audio_processing.ground_truth_processor import GroundtruthReader
 from mfcc_creator import create_mfcc, mfcc_mean
 from file_utils import return_from_path
@@ -28,6 +30,8 @@ def load_features(file_name):
 if __name__ == '__main__':
     prepare_audio_feature_groundtruth = partial(prepare_audio_feature, 'data/UrbanSound8K_groundtruth.csv')
     ftrs = return_from_path(prepare_audio_feature_groundtruth,
-                            'D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio',
+                            'D:\\Audio Features\\Small',
                             '.wav')
-    save_features(ftrs, 'data/UrbanSound8K_all.data')
+    audio_feature_df = DataFrame(ftrs)
+    save_features(audio_feature_df, 'data/UrbanSound8K_all_dataframe.data')
+
