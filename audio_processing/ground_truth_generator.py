@@ -85,4 +85,4 @@ if __name__ == '__main__':
     #process_fsd50k_ground_truth()
     #process_librispeech_ground_truth()
     #process_urbansound8k_ground_truth()
-    process_ted_ground_truth('D:\\TED\\SheenaIyengar_2010G-480p-Transcript.txt', 'D:\\TED\\SheenaIyengar_2010G-480p.wav')
+    process_ted_ground_truth('D:\\TED\\CKWilliams_2001-480p-Transcipt.txt', 'D:\\TED\\CKWilliams_2001-480p.wav')

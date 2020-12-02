@@ -10,10 +10,13 @@ SNR = 20*log(RMS_signal/RMS_noise)
 Where:  RMS_signal is the RMS value of signal
         RMS_noise is that of noise.
         Log is the logarithm of 10
-*****Additive White Gaussian Noise (AWGN)****
+****Additive White Gaussian Noise (AWGN)****
  - This kind of noise can be added (arithmetic element-wise addition) to the signal
  - Mean value is zero (randomly sampled from a Gaussian distribution with mean value of zero)
  - Contains all the frequency components in an equal manner
+****Real World Noise****
+ - An audio file which can be overlapped the signal as noise
+ - Frequency components will depend on the sound used
 '''
 
 
