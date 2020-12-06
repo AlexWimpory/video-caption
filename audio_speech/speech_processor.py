@@ -1,3 +1,4 @@
+from file_utils import save_object
 from speech_recogniser import SpeechRecogniser
 from speech_writer import print_to_time, save_to_srt, srt_to_video_using_audio, add_srt_to_video
 from audio_extractor import extract_audio
@@ -38,6 +39,7 @@ def demo_mp4():
     print(f'Processing audio file {audio_file_name}')
     results = SpeechRecogniser().process_file(audio_file_name)
     print(results)
+    save_object(results, 'data/YvonneAkiSawyerr_2020T-480p.data')
     save_to_srt(results, audio_file_name.replace('.wav', '.srt'))
     add_srt_to_video(audio_file_name.replace('.wav', '.srt'), video_file_name,
                      video_file_name.replace('.mp4', '_new.mp4'))
@@ -54,5 +56,5 @@ def demo_mp4():
 
 
 if __name__ == '__main__':
-    demo_wav()
-    # demo_mp4()
+    #demo_wav()
+     demo_mp4()

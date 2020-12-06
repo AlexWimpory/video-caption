@@ -11,3 +11,4 @@ num2words==0.5.10
 pydub==0.24.1
 pandas==1.1.4
 seaborn==0.11.0
+nltk==3.5

@@ -6,6 +6,7 @@ import config
 """
 Module that runs the Vosk model on the input file, returning words and timings
 Model can be found at: https://alphacephei.com/vosk/install
+Edited to be object orientated and to produce the information required by the project
 """
 
 class SpeechRecogniser:

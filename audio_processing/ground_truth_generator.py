@@ -52,6 +52,7 @@ def process_urbansound8k_ground_truth():
 
 
 def process_ted_ground_truth(path, audio_file_path):
+    """Process TED talk transcript to standard format"""
     new_file_name = append_to_file_name(path, '_groundtruth', '.csv')
     with open(path, 'r') as fin, open( new_file_name, 'w') as fout:
         names = []

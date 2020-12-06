@@ -4,6 +4,8 @@ from tensorflow.python.keras.models import load_model
 from model_trainer import ModelLabelEncoder
 import numpy as np
 
+"""Load the model and the label encoder which are used to predict the class of the input .wav file"""
+
 
 class ModelPredictor:
     def __init__(self, model_name):

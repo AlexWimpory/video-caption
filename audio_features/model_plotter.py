@@ -1,6 +1,11 @@
 import seaborn as sns
 from matplotlib import pyplot
 
+"""
+* Plot the learning curves from the models history
+* Plot the confusion matrix from the dataframe of probabilities
+"""
+
 
 def plot_history(history):
     pyplot.title('Model Accuracy')

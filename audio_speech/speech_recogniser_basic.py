@@ -1,6 +1,12 @@
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import wave
 
+"""
+Module that runs the Vosk model on the input file, returning words and timings
+Model can be found at: https://alphacephei.com/vosk/install
+Code that comes with the model
+"""
+
 
 def vosk_model(address):
     SetLogLevel(2)

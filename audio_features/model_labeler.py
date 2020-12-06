@@ -3,6 +3,11 @@ from tensorflow.python.keras.utils.np_utils import to_categorical
 import numpy as np
 import pickle
 
+"""
+Build and save an encoder that maps labels onto numerical values
+* Numerical labels = [0,1,2]
+* One hot encoding labels = [1,0,0],[0,1,0],[0,0,1]
+"""
 
 class ModelLabelEncoder:
     def __init__(self, labels):

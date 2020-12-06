@@ -1,6 +1,9 @@
 import csv
 import ast
 
+"""Look up the labels for the file in the ground truth document"""
+
+
 class GroundtruthReader:
     def __init__(self, groundtruth_filename):
         self.groundtruth_records = {}

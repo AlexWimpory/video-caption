@@ -2,6 +2,15 @@ import matplotlib.pyplot as plt
 import matplotlib.style as ms
 import numpy as np
 
+"""
+Use Librosa to plot the:
+* Time domain representation
+* Mel power spectrogram
+* MFCCs
+* MFCC deltas
+* MFCC delta-deltas
+"""
+
 ms.use('seaborn-muted')
 import librosa.display
 
