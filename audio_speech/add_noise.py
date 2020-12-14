@@ -73,5 +73,5 @@ def add_real_world_noise(signal_file, noise_file, snr):
 
 
 if __name__ == '__main__':
-    add_awgn('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198\\19-198-0001.wav', 10)
-    # add_real_world_noise('data/19-198-0001.wav', 'data/Welcome.wav', 10)
+    # add_awgn('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198\\19-198-0001.wav', 10)
+    add_real_world_noise('data/19-198-0001.wav', 'data/Welcome.wav', 10)
