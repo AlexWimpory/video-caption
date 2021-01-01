@@ -32,6 +32,6 @@ def visualise(mfcc, title):
 
 
 if __name__ == '__main__':
-    feature = create_mfcc('D:\\Audio Features\\Small\\a001_0_10.wav')
+    feature = create_mfcc('data/10_silence.wav')
     feature_mean = mfcc_mean(feature)
-    visualise(feature, 'Birds')
+    visualise(feature, 'Silence')

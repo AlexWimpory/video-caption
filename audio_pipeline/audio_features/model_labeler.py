@@ -1,11 +1,10 @@
-import os
-
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.python.keras.utils.np_utils import to_categorical
+from audio_pipeline import config
 import numpy as np
 import pickle
+import os
 
-from audio_pipeline import config
 
 """
 Build and save an encoder that maps labels onto numerical values

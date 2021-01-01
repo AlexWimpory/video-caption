@@ -1,8 +1,13 @@
 import math
+import os
+import random
+import tempfile
 import numpy as np
 import librosa
 import subprocess
 from scipy.io.wavfile import write
+
+from file_utils import split_base_and_extension
 
 '''
 Signal to noise ratio (SNR) can be defined as
@@ -45,33 +50,29 @@ def to_polar(complex_ar):
     return np.abs(complex_ar), np.angle(complex_ar)
 
 
-def add_awgn(signal_file, snr):
+def add_awgn(signal_file, snr, output_path, length):
     """Add AWGN to a .wav file"""
+    split_signal_file = split_base_and_extension(signal_file)
+    temp_broken_file_name = os.path.join(output_path, 'temp_broken' + split_signal_file[1])
+    temp_file_name = tempfile.mktemp(dir=output_path, prefix=split_signal_file[0], suffix=split_signal_file[1])
     signal, sr = librosa.load(signal_file)
     signal = np.interp(signal, (signal.min(), signal.max()), (-1, 1))
     noise = get_white_noise(signal, snr=snr)
     signal_noise = signal + noise
-    write('data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
-    subprocess.call(['ffmpeg', '-y', '-i', 'data/speech_noisy_broken.wav', '-ar', '44100', '-ac', '1',
-                     '-acodec', 'pcm_s16le', 'data/speech_noisy_fixed.wav'])
-
-
-def add_real_world_noise(signal_file, noise_file, snr):
-    """Combines 2 .wav files with the noise file being modified by the SNR"""
-    signal, sr = librosa.load(signal_file)
-    signal = np.interp(signal, (signal.min(), signal.max()), (-1, 1))
-    noise, sr = librosa.load(noise_file)
-    noise = np.interp(noise, (noise.min(), noise.max()), (-1, 1))
-    # crop noise if its longer than signal
-    if len(noise) > len(signal):
-        noise = noise[0:len(signal)]
-    noise = get_noise_from_sound(signal, noise, snr=snr)
-    signal_noise = signal + noise
-    write('data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
-    subprocess.call(['ffmpeg', '-y', '-i', 'data/speech_noisy_broken.wav', '-ar', '44100', '-ac', '1',
-                     '-acodec', 'pcm_s16le', 'data/speech_noisy_fixed.wav'])
+    write(temp_broken_file_name, sr, signal_noise.astype(np.float32))
+    subprocess.call(
+        ['ffmpeg', '-y', '-ss', '00:00:00', '-t', str(length), '-i', temp_broken_file_name,
+         '-ar', '44100', '-ac', '1', '-acodec', 'pcm_s16le', temp_file_name])
+    return temp_file_name
 
 
 if __name__ == '__main__':
-    add_awgn('data/10_silence.wav', 80)
-    #add_real_world_noise('data/19-198-0001.wav', 'data/Welcome.wav', 10)
+    with open('silence.csv', 'w') as fout:
+        for i in range(0, 800):
+            random_snr = random.randint(60, 100)
+            length = random.randint(2, 6)
+            file_name = add_awgn('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold11\\10_silence.wav',
+                                 random_snr,
+                                 'D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold11', length)
+            ground_truth_file_name = os.path.splitext(os.path.basename(file_name))[0]
+            fout.write(f"{ground_truth_file_name},['silence']\n")

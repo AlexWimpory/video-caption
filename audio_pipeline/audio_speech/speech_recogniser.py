@@ -1,6 +1,5 @@
 import os
 from vosk import Model, KaldiRecognizer, SetLogLevel
-from pysubs2 import SSAEvent, make_time, SSAFile
 import wave
 import json
 import config
@@ -46,14 +45,3 @@ class SpeechRecogniser:
 
 def get_words(results):
     return ' '.join([result['word'] for result in results])
-
-
-def save_to_srt(results, audio_file_name):
-    """Converts the output of the model to the standard subtitle format .srt"""
-    subs = SSAFile()
-    for result in results:
-        event = SSAEvent(start=make_time(s=result['start']), end=make_time(s=result['end']), text=result['word'])
-        subs.append(event)
-    srt_file = os.path.splitext(audio_file_name)[0] + '.srt'
-    subs.save(srt_file)
-    return srt_file

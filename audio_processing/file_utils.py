@@ -40,6 +40,10 @@ def append_to_file_name(path, new_str, extension):
     return join(dir_name, split[0] + new_str + extension)
 
 
+def split_base_and_extension(path):
+    split = os.path.splitext(os.path.basename(path))
+    return split[0], split[1]
+
 def save_object(obj, path):
     with open(path, 'wb') as fout:
         pickle.dump(obj, fout)

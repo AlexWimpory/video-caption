@@ -16,14 +16,15 @@ class FeatureRecogniser:
     def process_file(self, file_name):
         mfccs = create_mfcc(file_name)
         results = []
-        for mfcc in mfccs:
+        for mfcc, start, end in mfccs:
             mfcc_array = np.array([mfcc_mean(mfcc)])
             predicted_vector = self._model.predict_classes(mfcc_array)
             predicted_class = self._le.inverse_transform(predicted_vector)
 
             predicted_probability_vector = self._model.predict(mfcc_array)
             predicted_probability = predicted_probability_vector[0]
-            results.append((predicted_class[0], predicted_probability.max()))
+            results.append({'class': predicted_class[0], 'conf': predicted_probability.max(),
+                            'start': start, 'end': end})
         return results
 
 
@@ -34,9 +35,10 @@ def create_mfcc(path, sr=None):
     mfccs = []
     mono = wave.channels != 1
     for split in splits:
-        y, sr = librosa.load(path, sr=sr, mono=mono, offset=split[0]/1000,
-                             duration=config.duration/1000, res_type='kaiser_fast')
-        mfccs.append(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40))
+        y, sr = librosa.load(path, sr=sr, mono=mono, offset=split[0] / 1000,
+                             duration=config.duration / 1000, res_type='kaiser_fast')
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        mfccs.append((mfcc, split[0]/1000, (split[0]/1000) + (config.duration/1000)))
     return mfccs
 
 

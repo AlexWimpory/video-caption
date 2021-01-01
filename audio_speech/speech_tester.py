@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import time
-import add_noise
+import generate_silence
 
 # Initialise the speech recogniser model
 speech_recogniser = SpeechRecogniser()
@@ -88,7 +88,7 @@ def compare_noise(groundtruth, filename, snr_start, increment, snr_end):
         from_groundtruth = gtp.lookup_filename(base_filename)
         writer.writerow([None, 0, from_groundtruth])
         while snr_start >= snr_end:
-            add_noise.add_awgn(filename, snr_start)
+            generate_silence.add_awgn(filename, snr_start)
             results = speech_recogniser.process_file('data/speech_noisy_fixed.wav')
             words = [result['word'] for result in results]
             from_audio = ' '.join(words).upper()
