@@ -2,6 +2,7 @@ import os
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import wave
 import json
+import audio_pipeline.logging_config as logging_config
 import config
 
 """
@@ -16,7 +17,7 @@ class SpeechRecogniser:
 
     def __init__(self):
         """Set the log level and load the Vosk model"""
-        SetLogLevel(config.vosk_log_level)
+        SetLogLevel(logging_config.vosk_log_level)
         cwd = os.path.join(os.path.dirname(__file__), config.vosk_model_dir)
         self.model = Model(cwd)
 

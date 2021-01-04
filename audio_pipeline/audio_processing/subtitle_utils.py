@@ -85,17 +85,52 @@ def burn_subtitles_into_video(video_path, subtitle_path, output_path):
     return temp_file_name
 
 
-def combine_subs(first_subs, second_subs):
+def combine_subs(first_subs, second_subs, third_subs, fourth_subs, one_only=False):
     # Only ass files keep styling information properly
     combined_subs = SSAFile()
     combined_subs.styles['top'] = SSAStyle(alignment=8)
     combined_subs.styles['bottom'] = SSAStyle(alignment=2)
-    for sub in first_subs:
-        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'({sub.text})', style='top'))
+    combined_subs.styles['left'] = SSAStyle(alignment=4)
+    combined_subs.styles['right'] = SSAStyle(alignment=6)
+
     for sub in second_subs:
         combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=sub.text, style='bottom'))
+    for sub in first_subs:
+        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'({sub.text})', style='top'))
+    for sub in third_subs:
+        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'[{sub.text}]', style='left'))
+    for sub in fourth_subs:
+        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'[{sub.text}]', style='right'))
     combined_subs.sort()
+    if one_only:
+        combined_subs = filter_subs(combined_subs)
     return combined_subs
+
+
+def filter_subs(combined_subs):
+    filtered_subs = SSAFile()
+    last_sub = None
+    last_top_sub = None
+    for sub in combined_subs:
+        if sub.style == 'bottom':
+            filtered_subs.append(sub)
+            if last_top_sub and last_top_sub.end > sub.start:
+                last_top_sub.end = sub.start
+        elif sub.style == 'top':
+            if last_sub and last_sub.end > sub.start:
+                sub.start = last_sub.end
+            if sub.start < sub.end:
+                filtered_subs.append(sub)
+                last_top_sub = sub
+        else:
+            filtered_subs.append(sub)
+        last_sub = sub
+    filtered_removed_empty_subs = SSAFile()
+    filtered_removed_empty_subs.styles = combined_subs.styles
+    for sub in filtered_subs:
+        if sub.end > sub.start:
+            filtered_removed_empty_subs.append(sub)
+    return filtered_removed_empty_subs
 
 
 def combine_subtitle_files(first_file, second_file):
@@ -126,8 +161,10 @@ def save_to_subtitles(results, f):
 
 
 if __name__ == '__main__':
-    new_subtitle_file_1, end_time_1 = reprocess_subtitle_file('test.srt')
-    new_subtitle_file_2, end_time_2 = reprocess_subtitle_file('test2.srt')
-    tmp_file = create_empty_video(max(end_time_1, end_time_2) / 1000)
-    new_subtitle_file_combined = combine_subtitle_files(new_subtitle_file_2, new_subtitle_file_1)
-    subtitle_file = burn_subtitles_into_video(tmp_file, new_subtitle_file_combined)
+    # new_subtitle_file_1, end_time_1 = reprocess_subtitle_file('test.srt')
+    # new_subtitle_file_2, end_time_2 = reprocess_subtitle_file('test2.srt')
+    # tmp_file = create_empty_video(max(end_time_1, end_time_2) / 1000)
+    # new_subtitle_file_combined = combine_subtitle_files(new_subtitle_file_2, new_subtitle_file_1)
+    # subtitle_file = burn_subtitles_into_video(tmp_file, new_subtitle_file_combined)
+    subs = pysubs2.load('../../out/test_2.ass')
+    filter_subs(subs).save('../../out/test_3.ass')
