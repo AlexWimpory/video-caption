@@ -1,5 +1,5 @@
 import os
-from vosk import Model, KaldiRecognizer, SetLogLevel
+from vosk import Model, KaldiRecognizer
 import wave
 import json
 import audio_pipeline.logging_config as logging_config
@@ -11,17 +11,20 @@ Model can be found at: https://alphacephei.com/vosk/install
 Edited to be object orientated and to produce the information required by the project
 """
 
+logger = logging_config.get_logger(__name__)
+
 
 class SpeechRecogniser:
     """Simple class that uses Vosk to process a file for speech recognition"""
 
     def __init__(self):
         """Set the log level and load the Vosk model"""
-        SetLogLevel(logging_config.vosk_log_level)
         cwd = os.path.join(os.path.dirname(__file__), config.vosk_model_dir)
         self.model = Model(cwd)
+        logger.info(f'Loaded speech recognition model from {cwd}')
 
     def process_file(self, file_name):
+        logger.info(f'Recognising speech for {file_name}')
         wf = wave.open(file_name, "rb")
         if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
             raise Exception(f'Invalid file format for {file_name}')
@@ -41,6 +44,7 @@ class SpeechRecogniser:
         result = json.loads(rec.FinalResult())
         if len(result['text']) > 0:
             results.extend(result['result'])
+        logger.info(f'Processed speech, captured {len(results)} results')
         return results
 
 

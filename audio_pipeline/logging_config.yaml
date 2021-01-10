@@ -1,0 +1,24 @@
+version: 1
+handlers:
+  console:
+    class: logging.StreamHandler
+    stream  : ext://sys.stdout
+    formatter: default
+formatters:
+  brief:
+    format: '%(message)s'
+  default:
+    format: '%(asctime)s %(levelname)-8s %(filename)-35s %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+root:
+  level: DEBUG
+  handlers: [ console ]
+loggers:
+  __main__:
+    level: INFO
+    handlers: [ console ]
+    propagate: False
+  tensorflow:
+    level: ERROR
+    handlers: [ console ]
+    propagate: False

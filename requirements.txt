@@ -13,3 +13,4 @@ pandas==1.1.4
 seaborn==0.11.0
 nltk==3.5
 spacy==2.3.5
+pyyaml==5.3.1

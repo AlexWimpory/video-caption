@@ -3,8 +3,10 @@ import numpy as np
 import librosa
 from pydub import AudioSegment
 from tensorflow.python.keras.models import load_model
-from audio_pipeline import config
+from audio_pipeline import config, logging_config
 from audio_pipeline.audio_features.model_labeler import ModelLabelEncoder
+
+logger = logging_config.get_logger(__name__)
 
 
 class FeatureRecogniser:
@@ -12,8 +14,10 @@ class FeatureRecogniser:
         cwd = os.path.join(os.path.dirname(__file__), config.feature_model_file)
         self._model = load_model(cwd)
         self._le = ModelLabelEncoder.load()
+        logger.info(f'Loaded audio feature model from {cwd}')
 
     def process_file(self, file_name):
+        logger.info(f'Creating MFCCs for {file_name}')
         mfccs = create_mfcc(file_name)
         results = []
         for mfcc, start, end in mfccs:
@@ -25,6 +29,7 @@ class FeatureRecogniser:
             predicted_probability = predicted_probability_vector[0]
             results.append({'class': predicted_class[0], 'conf': predicted_probability.max(),
                             'start': start, 'end': end})
+        logger.info(f'Processed MFCCs, captured {len(results)} results')
         return results
 
 
