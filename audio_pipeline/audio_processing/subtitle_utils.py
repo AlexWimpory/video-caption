@@ -104,6 +104,22 @@ def create_ssa_file():
     return subs
 
 
+def flatten_subs(in_subs):
+    result_subs = create_ssa_file()
+    last_sub = None
+    for sub in in_subs:
+        if last_sub and sub.start <= last_sub.end and last_sub.text == sub.text:
+            last_sub.end = sub.end
+        elif last_sub:
+            result_subs.append(last_sub)
+            last_sub = sub
+        else:
+            last_sub = sub
+    if last_sub:
+        result_subs.append(last_sub)
+    return result_subs
+
+
 def combine_subs(first_subs, second_subs, third_subs, fourth_subs, one_only=False):
     # Only ass files keep styling information properly
     combined_subs = create_ssa_file()

@@ -20,4 +20,4 @@ def audio_format(path):
 if __name__ == '__main__':
     # extract_audio('D:\\TED\\CKWilliams_2001-480p.mp4', 'D:\\TED')
     #audio_format('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold5')
-    extract_audio('../audio_features/data/output_with_mono.mp4', '../audio_features/data')
+    extract_audio('../audio_sounds/data/my_video.mp4', '../audio_sounds/data')

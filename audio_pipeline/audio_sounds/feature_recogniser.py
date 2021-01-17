@@ -4,7 +4,7 @@ import librosa
 from pydub import AudioSegment
 from tensorflow.python.keras.models import load_model
 from audio_pipeline import config, logging_config
-from audio_pipeline.audio_features.model_labeler import ModelLabelEncoder
+from audio_pipeline.audio_sounds.model_labeler import ModelLabelEncoder
 
 logger = logging_config.get_logger(__name__)
 

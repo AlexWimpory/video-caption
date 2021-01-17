@@ -66,7 +66,7 @@ class SpaCyResultsProcessor:
         nlp_results = self.pos_tag()
         for i, (word, typ) in enumerate(nlp_results):
             speech_result = speech_results[i]
-            end = speech_result['start'] + max(speech_result['end'] - speech_result['start'], 1)
+            end = speech_result['start'] + max(speech_result['end'] - speech_result['start'], 2)
             pos_tag_results.append({'word': word, 'type': typ, 'start': speech_result['start'],
                                     'end': end, 'conf': speech_result['conf']})
         return pos_tag_results
@@ -77,7 +77,7 @@ class SpaCyResultsProcessor:
         for entity in nlp_results:
             speech_result_start = speech_results[entity[2]]
             speech_result_end = speech_results[entity[3]]
-            end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 1)
+            end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 2)
             ner_results.append({'word': f'{entity[0]}: {entity[1]}', 'start': speech_result_start['start'],
                                 'end': end, 'conf': 1})
         return ner_results
@@ -100,8 +100,9 @@ if __name__ == '__main__':
     # tgd_wrds = nep.pos_tag(wrds)
     # print(tgd_wrds)
     # print(nep.ner(tgd_wrds))
-    wrds = "Jack switch on the air conditioner even though it is loud its the middle of summer"
+    wrds = "aw"
     nlp = SpaCyNaturalLanguageProcessor()
     processor = nlp.get_spacy_results_processor(wrds)
     print(processor.pos_tag())
     print(processor.ner())
+

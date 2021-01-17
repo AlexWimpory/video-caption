@@ -32,4 +32,4 @@ def vosk_model(address):
 
 
 if __name__ == '__main__':
-    vosk_model('data/test_6.wav')
+    vosk_model('data/weird.wav')
