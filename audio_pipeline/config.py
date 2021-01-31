@@ -1,9 +1,9 @@
 audio_target_dir = '../out'
 frame_to_read = 4000
 vosk_model_dir = 'model'
-feature_model_file = 'model/model_1.hdf5'
-feature_label_file = 'model/model_1_labels.data'
-increment_percentage = 1
+sound_model_file = 'model/model_1.hdf5'
+sound_label_file = 'model/model_1_labels.data'
+increment_percentage = 0.25
 duration = 2000
 spacy_model = 'en_core_web_sm'
 pos_types = ['NN', 'NNS', 'NNP', 'NNPS']

@@ -6,7 +6,7 @@ from functools import partial
 import os
 
 
-def prepare_audio_feature(groundtruth, file_name):
+def prepare_audio_sound(groundtruth, file_name):
     """Generate an MFCC and look up the labels which are matched together"""
     base_file_name = os.path.splitext(os.path.basename(file_name))[0]
     gtp = GroundtruthReader(groundtruth)
@@ -16,10 +16,10 @@ def prepare_audio_feature(groundtruth, file_name):
 
 
 if __name__ == '__main__':
-    prepare_audio_feature_groundtruth = partial(prepare_audio_feature, 'data/UrbanSound8K_groundtruth.csv')
-    ftrs = return_from_path(prepare_audio_feature_groundtruth,
+    prepare_audio_sound_groundtruth = partial(prepare_audio_sound, 'data/UrbanSound8K_groundtruth.csv')
+    ftrs = return_from_path(prepare_audio_sound_groundtruth,
                             'D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio',
                             '.wav')
-    audio_feature_df = DataFrame(ftrs)
-    save_object(audio_feature_df, 'data/UrbanSound8K_all_dataframe.data')
+    audio_sound_df = DataFrame(ftrs)
+    save_object(audio_sound_df, 'data/UrbanSound8K_all_dataframe.data')
 

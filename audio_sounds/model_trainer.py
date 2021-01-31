@@ -9,7 +9,7 @@ from model_structures import *
 from model_plotter import plot_history, plot_confusion_matrix
 import numpy as np
 import pandas as pd
-import features_config
+import sounds_config
 
 
 class AudioFeaturesModel:
@@ -34,8 +34,8 @@ class AudioFeaturesModel:
     def train_model(self, x_train, y_train, x_val, y_val):
         """Train and save the model"""
         checkpointer = ModelCheckpoint(filepath=f'data/{self.model.name}.hdf5', verbose=1, save_best_only=True)
-        history = self.model.fit(x_train, y_train, batch_size=features_config.num_batch_size,
-                                 epochs=features_config.num_epochs, validation_data=(x_val, y_val),
+        history = self.model.fit(x_train, y_train, batch_size=sounds_config.num_batch_size,
+                                 epochs=sounds_config.num_epochs, validation_data=(x_val, y_val),
                                  callbacks=[checkpointer], verbose=1)
         self.le.save(self.model.name)
         return history
@@ -54,11 +54,11 @@ def train_and_test_model(features, le, model):
     """Use the AudioFeaturesModel methods to train and test the model"""
     # Split the data into training,validation and testing
     x_train, x_test, y_train, y_test = train_test_split(features, le.encoded_labels,
-                                                        test_size=1 - features_config.train_ratio,
+                                                        test_size=1 - sounds_config.train_ratio,
                                                         random_state=44)
     x_cv, x_test, y_cv, y_test = train_test_split(x_test, y_test,
-                                                  test_size=features_config.test_ratio / (
-                                                          features_config.test_ratio + features_config.validation_ratio),
+                                                  test_size=sounds_config.test_ratio / (
+                                                          sounds_config.test_ratio + sounds_config.validation_ratio),
                                                   random_state=44)
     # Calculate pre trained accuracy
     pre_acc = model.test_model(x_test, y_test)

@@ -1,83 +1,230 @@
-import os
 import tempfile
-import pysubs2
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color
+
+from pysubs2 import SSAFile, SSAStyle, Color, SSAEvent, make_time
 from audio_pipeline import logging_config
 from audio_pipeline.audio_processing.ffmpeg_processor import run_ffmpeg
-
-"""
-Subtitle generation tends to create a lot of very small entries across the video file.
-To counter this we need to combine together subtitle entries so that they are retained on
-the screen as multiple words.  We also want to ensure that subtitles disappear if they pass a
-time period since they appeared.  We also want to be able to combine subtitle files in such
-a way that the output from each file can be distinguished and covers the correct time periods
-"""
 
 logger = logging_config.get_logger(__name__)
 
 
-def compress(subs, max_chars=30, max_stretch_time=3, max_oldest_time=10):
+def _adjust_for_clashing_subs(combined_subs, working_sub, exclude):
+    """Helper function for the append code"""
+    # If we haven't got a set of subs to check against early return
+    if not combined_subs or not exclude:
+        return working_sub, None
+    second_working_sub = None
+    for sub in combined_subs:
+        # Standard style exit
+        if exclude and sub.style not in exclude:
+            continue
+        if sub.start <= working_sub.start <= sub.end:
+            # Drop the start of the working sub
+            working_sub.start = sub.end
+        elif working_sub.start <= sub.start <= working_sub.end:
+            # Drop the end of the working sub
+            if sub.end < working_sub.end:
+                # We might need to split the sub
+                second_working_sub = working_sub.copy()
+                second_working_sub.start = sub.end
+                second_working_sub.end = working_sub.end
+            working_sub.end = sub.start
+    # Check that we now have a sub that has no duration
+    if working_sub.start >= working_sub.end:
+        working_sub = None
+    return working_sub, second_working_sub
+
+
+def append_subs(combined_subs, new_subs, style=None, formatter=None, exclude=None):
+    """Append a set of subs to a current set avoiding a clash if needed.  Also allows for styling and formatting"""
+    if exclude is None:
+        exclude = []
+    new_combined_subs = SSAFile()
+    if combined_subs:
+        # First add the subs we are keeping
+        new_combined_subs.extend(combined_subs)
+    for sub in new_subs:
+        # Add a style
+        if style:
+            sub.style = style
+        # Perform the formatting
+        if formatter:
+            sub.text = formatter(sub.text)
+        # See if we want to cater for clashes
+        sub, second_sub = _adjust_for_clashing_subs(combined_subs, sub, exclude)
+        # Prepare results
+        if sub:
+            new_combined_subs.append(sub)
+        if second_sub:
+            new_combined_subs.append(second_sub)
+    new_combined_subs.sort()
+    return new_combined_subs
+
+
+def flatten_subs(starting_subs, style=None):
+    """Take some subs and merge them together where that are effectively the same but over different periods"""
     new_subs = SSAFile()
-    # Phase 1 based on character count so that we dont overflow the screen
-    # Phase 2 if the end of the last subtitle is close to the start of the next we want to stretch out the end
-    # Phase 3 is to make sure that the oldest word on the screen has not been there for too long
-    char_count = 0
-    current_text = ''
-    current_event = None
-    oldest_start_time = 0
-    for sub in subs:
-        last_event = current_event
-        current_event = SSAEvent()
-        current_event.start = sub.start
-        current_event.end = sub.end
-        char_count += len(sub.text)
-        # Check the character count and reset if needed
-        if char_count > max_chars:
-            current_text = sub.text
-            char_count = len(sub.text)
+    for sub in starting_subs:
+        # Standard style exit
+        if style and sub.style != style:
+            continue
+        if not new_subs:
+            new_subs.append(sub)
+        elif sub.text == new_subs[-1].text and sub.start <= new_subs[-1].end:
+            if sub.end > new_subs[-1].end:
+                new_subs[-1].end = sub.end
         else:
-            current_text = current_text + ' ' + sub.text
-        # Check the stretch of subtitles make last one longer
-        if last_event and current_event.start - last_event.end < max_stretch_time * 1000:
-            last_event.end = current_event.start
-        else:
-            current_text = sub.text
-            char_count = len(sub.text)
-        # Make sure that the oldest subtitle on the screen is not too old
-        if current_event.start - oldest_start_time > max_oldest_time * 1000:
-            current_text = sub.text
-            char_count = len(sub.text)
-            oldest_start_time = sub.start
-        current_event.text = current_text
-        new_subs.append(current_event)
-    logger.info(f'Compressed {len(subs)} subtitles into {len(new_subs)} subtitles')
+            new_subs.append(sub)
+    # Copy in all the subs we skipped due to styling
+    if style:
+        for sub in starting_subs:
+            if sub.style != style:
+                new_subs.append(sub)
+    new_subs.sort()
     return new_subs
 
 
-def reprocess_subtitle_file(path, max_chars=30, max_stretch_time=3, max_oldest_start=10):
-    """Combine subtitles across a time period"""
-    file_name, ext = os.path.splitext(path)
-    compressed_subtitle_file = file_name + '.ass'
-    subs = pysubs2.load(path)
-    compressed_subs = compress(subs, max_chars, max_stretch_time, max_oldest_start)
-    compressed_subs.save(compressed_subtitle_file)
-    logger.info(f'Combined {len(subs)} subtitles from {path} to {len(compressed_subs)} in {compressed_subtitle_file}')
-    return compressed_subtitle_file, subs[len(subs) - 1].end
+def merge_subs(starting_subs, tolerance_millis=1000, style=None):
+    """Take some subs and eliminate any blank spots where they are less than a tolerance"""
+    merged_subs = SSAFile()
+    for sub in starting_subs:
+        if style and sub.style != style:
+            continue
+        if merged_subs and merged_subs[-1].end + tolerance_millis >= sub.start:
+            merged_subs[-1].end = sub.start
+        merged_subs.append(sub)
+    if style:
+        for sub in starting_subs:
+            if sub.style != style:
+                merged_subs.append(sub)
+    merged_subs.sort()
+    return merged_subs
 
 
-def create_empty_video(time_in_seconds):
-    temp_file_name = tempfile.mktemp(dir='.', prefix='output_', suffix='.mp4')
-    run_ffmpeg(f'ffmpeg -y -t {time_in_seconds} -f lavfi -i color=c=black:s=1024*768 -c:v libx264'
-               f' -tune stillimage -pix_fmt yuv420p {temp_file_name}')
-    logger.info(f'Created empty video file {temp_file_name} with length {time_in_seconds}s')
-    return temp_file_name
+def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis=10000, style=None):
+    """Mostly for the use of speech subtitles this will take individual words and create a running subtitle"""
+    # Phase 1 based on character count so that we dont overflow the screen
+    # Phase 2 is to make sure that the oldest word on the screen has not been there for too long
+    # First remove gaps where they exist
+    merged_subs = merge_subs(subs, max_stretch_millis, style)
+    char_count = 0
+    oldest_start_time = 0
+    compressed_subs = SSAFile()
+    for sub in merged_subs:
+        if style and sub.style is not style:
+            continue
+        char_count += len(sub.text)
+        # Check the character count and reset if needed
+        if char_count > max_chars:
+            char_count = len(sub.text)
+            oldest_start_time = sub.start
+        elif sub.start - oldest_start_time > max_oldest_millis:
+            char_count = len(sub.text)
+            oldest_start_time = sub.start
+        elif len(compressed_subs) > 0:
+            sub.text = compressed_subs[-1].text + ' ' + sub.text
+            char_count += 1
+        compressed_subs.append(sub)
+    if style:
+        for sub in merged_subs:
+            if sub.style is not style:
+                compressed_subs.append(sub)
+    compressed_subs.sort()
+    return compressed_subs
 
 
-def add_subtitles_to_video(video_path, subtitle_path):
-    temp_file_name = tempfile.mktemp(dir='.', prefix='output_with_subtitles_', suffix='.mp4')
-    run_ffmpeg(f'ffmpeg -i {video_path} -i {subtitle_path} -c copy -c:s mov_text {temp_file_name}')
-    logger.info(f'Added subtitles {subtitle_path} to {video_path} stored in {temp_file_name}')
-    return temp_file_name
+def remove_tiny_subs(subs, duration_millis=1000, left_millis=2000, right_millis=2000, style=None):
+    """Remove any subs that are out on their own"""
+    copy_subs = SSAFile()
+    new_subs = SSAFile()
+    for sub in subs:
+        if (style and sub.style is style) or not style:
+            copy_subs.append(sub)
+    for i, sub in enumerate(copy_subs):
+        # if it longer it goes in
+        if sub.duration >= duration_millis:
+            new_subs.append(sub)
+            continue
+        # if its the first one then look right only
+        # if its the last one then look left only
+        # if its in the middle then look both ways
+        if left_millis is None and right_millis is None:
+            continue
+        if i == 0:
+            if copy_subs[i + 1].start - sub.end < right_millis:
+                new_subs.append(sub)
+        elif i == len(copy_subs) - 1:
+            if sub.start - copy_subs[i - 1].end < left_millis:
+                new_subs.append(sub)
+        elif copy_subs[i + 1].start - sub.end < right_millis or sub.start - copy_subs[i - 1].end < left_millis:
+            new_subs.append(sub)
+    if style:
+        for sub in subs:
+            if sub.style is not style:
+                new_subs.append(sub)
+    new_subs.sort()
+    return new_subs
+
+
+def add_styles(subs, style_list=None):
+    if style_list is None:
+        style_list = []
+    for style in style_list:
+        new_style = SSAStyle()
+        if 'left' in style:
+            new_style.alignment = 4
+        elif 'right' in style:
+            new_style.alignment = 6
+        elif 'top' in style:
+            new_style.alignment = 8
+        elif 'bottom' in style:
+            new_style.alignment = 2
+        if 'pred' in style:
+            new_style.primarycolor = Color(255, 0, 0, 0)
+        elif 'pblue' in style:
+            new_style.primarycolor = Color(0, 0, 255, 0)
+        elif 'pgreen' in style:
+            new_style.primarycolor = Color(0, 255, 0, 0)
+        elif 'pwhite' in style:
+            new_style.primarycolor = Color(255, 255, 255, 0)
+        if 'bred' in style:
+            new_style.backcolor = Color(255, 0, 0, 0)
+        elif 'bblue' in style:
+            new_style.backcolor = Color(0, 0, 255, 0)
+        elif 'bgreen' in style:
+            new_style.backcolor = Color(0, 255, 0, 0)
+        elif 'bwhite' in style:
+            new_style.backcolor = Color(255, 255, 255, 0)
+        if 'bold' in style:
+            new_style.bold = True
+        if 'italic' in style:
+            new_style.italic = True
+        subs.styles[style] = new_style
+    return subs
+
+
+def copy_ssa_file(ssa_file):
+    new_ssa = SSAFile()
+    new_ssa.import_styles(ssa_file)
+    return new_ssa
+
+
+def save_to_subtitles(results, f):
+    subs = SSAFile()
+    for result in results:
+        event = SSAEvent(start=make_time(s=result['start']),
+                         end=make_time(s=result['end']), text=f(result))
+        if 'highlight' in result and result['highlight']:
+            event.style = 'red'
+        subs.append(event)
+    logger.info(f'Processed {len(results)} results to subtitle events')
+    return subs
+
+
+def create_styles(subs):
+    styles = set()
+    for sub in subs:
+        styles.add(sub.style)
+    add_styles(subs, styles)
 
 
 def burn_subtitles_into_video(video_path, subtitle_path, output_path):
@@ -91,121 +238,3 @@ def burn_subtitles_into_video(video_path, subtitle_path, output_path):
     run_ffmpeg(f'ffmpeg -i {video_path} -vf "ass={subtitle_ass_file}" {temp_file_name}')
     logger.info(f'Burnt subtitles {subtitle_path} to {video_path} stored in {temp_file_name}')
     return temp_file_name
-
-
-def create_ssa_file():
-    subs = SSAFile()
-    subs.styles['top'] = SSAStyle(alignment=8)
-    subs.styles['bottom'] = SSAStyle(alignment=2)
-    subs.styles['left'] = SSAStyle(alignment=4)
-    subs.styles['left_red'] = SSAStyle(alignment=4, primarycolor=Color(255, 0, 0, 0))
-    subs.styles['red'] = SSAStyle(primarycolor=Color(255, 0, 0, 0))
-    subs.styles['right'] = SSAStyle(alignment=6)
-    return subs
-
-
-def flatten_subs(in_subs):
-    result_subs = create_ssa_file()
-    last_sub = None
-    for sub in in_subs:
-        if last_sub and sub.start <= last_sub.end and last_sub.text == sub.text:
-            last_sub.end = sub.end
-        elif last_sub:
-            result_subs.append(last_sub)
-            last_sub = sub
-        else:
-            last_sub = sub
-    if last_sub:
-        result_subs.append(last_sub)
-    return result_subs
-
-
-def combine_subs(first_subs, second_subs, third_subs, fourth_subs, one_only=False):
-    # Only ass files keep styling information properly
-    combined_subs = create_ssa_file()
-    for sub in second_subs:
-        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=sub.text, style='bottom'))
-    for sub in first_subs:
-        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'({sub.text})', style='top'))
-    for sub in third_subs:
-        if sub.style == 'red':
-            combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'[{sub.text}]', style='left_red'))
-        else:
-            combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'[{sub.text}]', style='left'))
-    for sub in fourth_subs:
-        combined_subs.append(SSAEvent(start=sub.start, end=sub.end, text=f'[{sub.text}]', style='right'))
-    combined_subs.sort()
-    if one_only:
-        combined_subs = filter_subs(combined_subs)
-    logger.info(f'Combined subtitles into {len(combined_subs)} subtitles')
-    return combined_subs
-
-
-def filter_subs(combined_subs):
-    filtered_subs = SSAFile()
-    last_sub = None
-    last_top_sub = None
-    for sub in combined_subs:
-        if sub.style == 'bottom':
-            filtered_subs.append(sub)
-            if last_top_sub and last_top_sub.end > sub.start:
-                last_top_sub.end = sub.start
-            last_sub = sub
-        elif sub.style == 'top':
-            if last_sub and last_sub.end > sub.start:
-                sub.start = last_sub.end
-            if sub.start < sub.end:
-                filtered_subs.append(sub)
-                last_top_sub = sub
-            last_sub = sub
-        else:
-            filtered_subs.append(sub)
-    filtered_removed_empty_subs = SSAFile()
-    filtered_removed_empty_subs.styles = combined_subs.styles
-    for sub in filtered_subs:
-        if sub.end > sub.start:
-            filtered_removed_empty_subs.append(sub)
-    logger.info(f'Filtered subtitles from {len(combined_subs)} to {len(filtered_removed_empty_subs)} subtitles')
-    return filtered_removed_empty_subs
-
-
-def combine_subtitle_files(first_file, second_file):
-    # By default overlapping subtitles are put on separate lines
-    file_name, ext = os.path.splitext(first_file)
-    combined_subtitle_file = file_name + '_combined.ass'
-    # This is the master subtitle file
-    combined_subs = combine_subs(pysubs2.load(first_file), pysubs2.load(second_file))
-    combined_subs.save(combined_subtitle_file)
-    logger.info(f'Combined {first_file} and {second_file}')
-    return combined_subtitle_file
-
-
-def save_to_subtitle_file(results, audio_file_name, f):
-    """Converts the output of the model to the standard subtitle format .srt"""
-    subs = save_to_subtitles(results, f)
-    ass_file = os.path.splitext(audio_file_name)[0] + '.ass'
-    subs.save(ass_file)
-    logger.info(f'Saved {len(results)} subtitles to {ass_file}')
-    return ass_file
-
-
-def save_to_subtitles(results, f):
-    subs = create_ssa_file()
-    for result in results:
-        event = SSAEvent(start=make_time(s=result['start']),
-                         end=make_time(s=result['end']), text=f(result))
-        if 'highlight' in result and result['highlight']:
-            event.style = 'red'
-        subs.append(event)
-    logger.info(f'Processed {len(results)} results to subtitle events')
-    return subs
-
-
-if __name__ == '__main__':
-    # new_subtitle_file_1, end_time_1 = reprocess_subtitle_file('test.srt')
-    # new_subtitle_file_2, end_time_2 = reprocess_subtitle_file('test2.srt')
-    # tmp_file = create_empty_video(max(end_time_1, end_time_2) / 1000)
-    # new_subtitle_file_combined = combine_subtitle_files(new_subtitle_file_2, new_subtitle_file_1)
-    # subtitle_file = burn_subtitles_into_video(tmp_file, new_subtitle_file_combined)
-    subs = pysubs2.load('../../out/test_2.ass')
-    filter_subs(subs).save('../../out/test_3.ass')

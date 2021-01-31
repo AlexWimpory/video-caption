@@ -1,11 +1,7 @@
 import spacy
 from spacy.matcher.phrasematcher import PhraseMatcher
-
 from audio_pipeline import config, logging_config
 
-# TODO
-# add to ner training
-# look at phrase chunking
 
 logger = logging_config.get_logger(__name__)
 

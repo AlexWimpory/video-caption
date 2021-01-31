@@ -24,6 +24,6 @@ class ModelLabelEncoder:
 
     @staticmethod
     def load():
-        cwd = os.path.join(os.path.dirname(__file__), config.feature_label_file)
+        cwd = os.path.join(os.path.dirname(__file__), config.sound_label_file)
         with open(cwd, 'rb') as fin:
             return pickle.load(fin)

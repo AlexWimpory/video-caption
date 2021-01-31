@@ -5,16 +5,17 @@ from pydub import AudioSegment
 from tensorflow.python.keras.models import load_model
 from audio_pipeline import config, logging_config
 from audio_pipeline.audio_sounds.model_labeler import ModelLabelEncoder
+from collections import Counter
 
 logger = logging_config.get_logger(__name__)
 
 
 class FeatureRecogniser:
     def __init__(self):
-        cwd = os.path.join(os.path.dirname(__file__), config.feature_model_file)
+        cwd = os.path.join(os.path.dirname(__file__), config.sound_model_file)
         self._model = load_model(cwd)
         self._le = ModelLabelEncoder.load()
-        logger.info(f'Loaded audio feature model from {cwd}')
+        logger.info(f'Loaded audio sound model from {cwd}')
 
     def process_file(self, file_name):
         logger.info(f'Creating MFCCs for {file_name}')
@@ -43,7 +44,7 @@ def create_mfcc(path, sr=None):
         y, sr = librosa.load(path, sr=sr, mono=mono, offset=split[0] / 1000,
                              duration=config.duration / 1000, res_type='kaiser_fast')
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        mfccs.append((mfcc, split[0]/1000, (split[0]/1000) + (config.duration/1000)))
+        mfccs.append((mfcc, split[0] / 1000, (split[0] / 1000) + (config.duration / 1000)))
     return mfccs
 
 
@@ -64,3 +65,38 @@ def calculate_splits(time_in_millis):
         split_times.append((start_time, end_time))
         start_time += increment
     return split_times
+
+
+def process_overlap(sound_results):
+    new_results = []
+    start = 0
+    end = 1
+    max_slice_size = config.duration / (config.duration * config.increment_percentage)
+    increment_time = (config.duration * config.increment_percentage) / 1000
+    start_time = 0
+    while True:
+        result = process_result(sound_results[start:end])
+        result['start'] = start_time
+        result['end'] = start_time + increment_time
+        new_results.append(result)
+        start_time += increment_time
+        end += 1
+        if end > max_slice_size:
+            start += 1
+        if start >= len(sound_results):
+            break
+    return new_results
+
+
+def process_result(sound_results_slice):
+    counter = Counter(result['class'] for result in sound_results_slice)
+    classes = []
+    last_count = 0
+    for count in counter.most_common():
+        if last_count != 0 and last_count != count[1]:
+            break
+        classes.append(count[0])
+        last_count = count[1]
+    sound_results = filter(lambda x: x['class'] in classes, sound_results_slice)
+    sound_results = sorted(sound_results, key=lambda x: x['conf'], reverse=True)
+    return sound_results[0].copy()

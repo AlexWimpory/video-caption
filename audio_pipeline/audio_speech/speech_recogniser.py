@@ -1,9 +1,9 @@
 import os
-from vosk import Model, KaldiRecognizer
 import wave
 import json
 import audio_pipeline.logging_config as logging_config
 import config
+from vosk import Model, KaldiRecognizer
 
 """
 Module that runs the Vosk model on the input file, returning words and timings
