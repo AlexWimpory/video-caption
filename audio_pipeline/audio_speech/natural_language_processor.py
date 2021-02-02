@@ -94,6 +94,29 @@ class SpaCyNaturalLanguageProcessor:
     def get_spacy_results_processor(self, sentence, speech_results):
         return SpaCyResultsProcessor(sentence, self.nlp, speech_results, self.matcher)
 
+    def process_stopwords(self, speech_results, pos_results):
+        new_results = []
+        for i, result in enumerate(speech_results):
+            left_gap = result['start'] - speech_results[i - 1]['end']
+            if i < len(speech_results) - 1:
+                right_gap = result['end'] - speech_results[i + 1]['start']
+            else:
+                right_gap = 10
+            if left_gap < 2 or right_gap < 2:
+                new_results.append(result)
+                continue
+            if result['word'] in self.nlp.Defaults.stop_words:
+                continue
+            if self.get_type(result['start'], pos_results) == 'UH':
+                continue
+            new_results.append(result)
+        return new_results
+
+    @staticmethod
+    def get_type(start, pos_results):
+        for result in pos_results:
+            if result['start'] == start:
+                return result['type']
 
 if __name__ == '__main__':
     wrds = "Jack switch on the air conditioner even though it is loud its the middle of summer"

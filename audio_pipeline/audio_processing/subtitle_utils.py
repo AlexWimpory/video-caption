@@ -120,6 +120,9 @@ def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis
         elif sub.start - oldest_start_time > max_oldest_millis:
             char_count = len(sub.text)
             oldest_start_time = sub.start
+        elif len(compressed_subs) > 0 and sub.start != compressed_subs[-1].end:
+            char_count = len(sub.text)
+            oldest_start_time = sub.start
         elif len(compressed_subs) > 0:
             sub.text = compressed_subs[-1].text + ' ' + sub.text
             char_count += 1

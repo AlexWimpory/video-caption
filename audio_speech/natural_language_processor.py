@@ -100,7 +100,7 @@ if __name__ == '__main__':
     # tgd_wrds = nep.pos_tag(wrds)
     # print(tgd_wrds)
     # print(nep.ner(tgd_wrds))
-    wrds = "aw"
+    wrds = "welcome to my house"
     nlp = SpaCyNaturalLanguageProcessor()
     processor = nlp.get_spacy_results_processor(wrds)
     print(processor.pos_tag())

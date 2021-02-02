@@ -11,6 +11,9 @@ import os
 logger = get_logger(__name__)
 
 
+# TODO Tidy up process_stopwords
+# TODO Fix demo_5 (gun shot)
+
 def main(path):
     logger.info(f'Processing video file {path}')
     audio_file = extract_audio(path, config.audio_target_dir)
@@ -26,6 +29,7 @@ def main(path):
     filtered_pos_results = filter_processor(pos_results)
     ner_results = processor.process_speech_results_ner()
     match_results = processor.process_speech_results_match()
+    speech_results = nlp.process_stopwords(speech_results, pos_results)
 
     subs_1 = save_to_subtitles(speech_results,
                                lambda speech_result: speech_result['word'])
