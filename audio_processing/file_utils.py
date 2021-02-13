@@ -17,6 +17,18 @@ def apply_to_path(f, path_name, extension):
                 f(os.path.join(root, file))
 
 
+def apply_to_target_path(f, path_name, extension, target_path):
+    if not os.path.isdir(target_path):
+        os.mkdir(target_path)
+    for root, directories, files in os.walk(path_name):
+        for file in files:
+            if file.endswith(extension):
+                path = root.replace(path_name, target_path)
+                if not os.path.isdir(path):
+                    os.mkdir(path)
+                f(os.path.join(root, file), path)
+
+
 def return_from_path(f, path_name, extension):
     results = []
     for root, dirs, files in os.walk(path_name):
@@ -43,6 +55,13 @@ def append_to_file_name(path, new_str, extension):
 def split_base_and_extension(path):
     split = os.path.splitext(os.path.basename(path))
     return split[0], split[1]
+
+
+def split_path_base_and_extension(path):
+    path, base = os.path.split(path)
+    split = os.path.splitext(base)
+    return path, split[0], split[1]
+
 
 def save_object(obj, path):
     with open(path, 'wb') as fout:

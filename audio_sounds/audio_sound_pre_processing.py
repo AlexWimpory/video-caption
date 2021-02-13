@@ -18,8 +18,8 @@ def prepare_audio_sound(groundtruth, file_name):
 if __name__ == '__main__':
     prepare_audio_sound_groundtruth = partial(prepare_audio_sound, 'data/UrbanSound8K_groundtruth.csv')
     ftrs = return_from_path(prepare_audio_sound_groundtruth,
-                            'D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio',
+                            'D:\\Audio Features\\new\\fold11',
                             '.wav')
     audio_sound_df = DataFrame(ftrs)
-    save_object(audio_sound_df, 'data/UrbanSound8K_all_dataframe.data')
+    save_object(audio_sound_df, 'data/UrbanSound8K_fold11.data')
 

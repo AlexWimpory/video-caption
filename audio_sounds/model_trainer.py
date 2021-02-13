@@ -78,7 +78,7 @@ def train_and_test_model(features, le, model):
 
 def trainer():
     """Load the data and process it before training and testing"""
-    features_and_labels = load_object('data/UrbanSound8K_all_dataframe.data')
+    features_and_labels = load_object('data/UrbanSound8K_fold1.data')
     labels = features_and_labels['labels'].tolist()
     ftrs = np.array(features_and_labels['mfcc'].to_list())
     label_encoder = ModelLabelEncoder(labels)

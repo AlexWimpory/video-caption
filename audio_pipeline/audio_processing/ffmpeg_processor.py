@@ -10,7 +10,7 @@ def capture_build_info(line, lines_iter):
 
 
 def capture_info(line, lines_iter, first_line=True):
-    in_info = []
+    in_info = list()
     if first_line:
         in_info.append(line)
     while lines_iter.peek().startswith(' '):

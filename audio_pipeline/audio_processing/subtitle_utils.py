@@ -136,7 +136,7 @@ def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis
 
 
 def remove_tiny_subs(subs, duration_millis=1000, left_millis=2000, right_millis=2000, style=None):
-    """Remove any subs that are out on their own"""
+    """Remove any subs that are out on their own or too short"""
     copy_subs = SSAFile()
     new_subs = SSAFile()
     for sub in subs:
@@ -169,10 +169,12 @@ def remove_tiny_subs(subs, duration_millis=1000, left_millis=2000, right_millis=
 
 
 def add_styles(subs, style_list=None):
+    """Contains different colours, positions and fonts for the subtitles"""
     if style_list is None:
         style_list = []
     for style in style_list:
         new_style = SSAStyle()
+        # Number for position refers to the number on a keypad
         if 'left' in style:
             new_style.alignment = 4
         elif 'right' in style:
@@ -181,6 +183,7 @@ def add_styles(subs, style_list=None):
             new_style.alignment = 8
         elif 'bottom' in style:
             new_style.alignment = 2
+        # Setting the RGB values for the text
         if 'pred' in style:
             new_style.primarycolor = Color(255, 0, 0, 0)
         elif 'pblue' in style:
@@ -189,6 +192,7 @@ def add_styles(subs, style_list=None):
             new_style.primarycolor = Color(0, 255, 0, 0)
         elif 'pwhite' in style:
             new_style.primarycolor = Color(255, 255, 255, 0)
+        # Setting the RGB values for the text's background
         if 'bred' in style:
             new_style.backcolor = Color(255, 0, 0, 0)
         elif 'bblue' in style:
@@ -197,6 +201,7 @@ def add_styles(subs, style_list=None):
             new_style.backcolor = Color(0, 255, 0, 0)
         elif 'bwhite' in style:
             new_style.backcolor = Color(255, 255, 255, 0)
+        # Setting different font types
         if 'bold' in style:
             new_style.bold = True
         if 'italic' in style:

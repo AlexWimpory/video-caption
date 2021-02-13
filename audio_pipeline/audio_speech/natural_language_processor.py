@@ -2,7 +2,6 @@ import spacy
 from spacy.matcher.phrasematcher import PhraseMatcher
 from audio_pipeline import config, logging_config
 
-
 logger = logging_config.get_logger(__name__)
 
 
@@ -117,6 +116,7 @@ class SpaCyNaturalLanguageProcessor:
         for result in pos_results:
             if result['start'] == start:
                 return result['type']
+
 
 if __name__ == '__main__':
     wrds = "Jack switch on the air conditioner even though it is loud its the middle of summer"

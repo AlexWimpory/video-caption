@@ -9,8 +9,19 @@ from collections import Counter
 
 logger = logging_config.get_logger(__name__)
 
+"""
+Performs the following operations:
+1. Split an audio file into chunks
+2. Calculate MFCCs for each chunk
+3. Load the sound prediction model and give predictions for each chunk
+4. If there is overlap create a single timeline from the results
+"""
+
 
 class FeatureRecogniser:
+    """Class which contains the sound classification model and the associated label encoder
+    The model loaded can be changed in the config file
+    Used to generate predictions from MFCCs """
     def __init__(self):
         cwd = os.path.join(os.path.dirname(__file__), config.sound_model_file)
         self._model = load_model(cwd)
@@ -41,6 +52,8 @@ def create_mfcc(path, sr=None):
     mfccs = []
     mono = wave.channels != 1
     for split in splits:
+        # Running Librosa on each chunk to calculate the MFCCs
+        # This changes the format of the audio to a common format of mono and 22050Hz
         y, sr = librosa.load(path, sr=sr, mono=mono, offset=split[0] / 1000,
                              duration=config.duration / 1000, res_type='kaiser_fast')
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
@@ -49,7 +62,7 @@ def create_mfcc(path, sr=None):
 
 
 def mfcc_mean(mfcc):
-    """MFCC not a reasonable input for model so convert matrix to vector"""
+    """MFCC matrix not a reasonable input for the MLP model so the matrix is converted to vector"""
     return np.mean(mfcc.T, axis=0)
 
 

@@ -38,5 +38,5 @@ class ModelPredictorResults:
 if __name__ == '__main__':
     predictor = ModelPredictor(model_name='model_1')
     #res = predictor.predict('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold5\\178686-0-0-63.wav')
-    res = predictor.predict('data/8_dog.wav')
+    res = predictor.predict('data/178686-0-0-63_80k.wav')
     print(json.dumps(res.__dict__))
