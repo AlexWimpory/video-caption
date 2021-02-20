@@ -11,9 +11,6 @@ import os
 logger = get_logger(__name__)
 
 
-# TODO Tidy up process_stopwords
-# TODO Fix demo_5 (gun shot)
-
 def main(path):
     logger.info(f'Processing video file {path}')
     audio_file = extract_audio(path, config.audio_target_dir)
@@ -60,4 +57,4 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main('../out/demo_4.mp4')
+    main('../out/demo_5.mp4')

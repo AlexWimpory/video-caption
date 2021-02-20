@@ -107,4 +107,4 @@ class FFMPEGResults:
 
     # TODO Make this nice
     def get_sample_rate(self):
-        return int(self.input_info[0].split('\n')[4].strip().split(',')[1].replace(' Hz', ''))
+        return int(self.input_info[0].split('\n')[2].strip().split(',')[1].replace(' Hz', ''))

@@ -1,4 +1,6 @@
 import json
+
+from file_utils import load_object
 from mfcc_creator import create_mfcc, mfcc_mean
 from tensorflow.python.keras.models import load_model
 from model_trainer import ModelLabelEncoder
@@ -28,6 +30,14 @@ class ModelPredictor:
 
         return results
 
+    def evaluate_dataframe(self, dataframe):
+        labels = dataframe['labels'].tolist()
+        labels = self._le.transform_to_categorical(labels)
+        ftrs = np.array(dataframe['mfcc'].to_list())
+        score = self._model.evaluate(ftrs, labels, verbose=0)
+        accuracy = 100 * score[1]
+        return accuracy
+
 
 class ModelPredictorResults:
     def __init__(self):
@@ -36,7 +46,11 @@ class ModelPredictorResults:
 
 
 if __name__ == '__main__':
+    # predictor = ModelPredictor(model_name='model_1')
+    # res = predictor.predict('data/178686-0-0-63_20k.wav')
+    # print(json.dumps(res.__dict__))
+
     predictor = ModelPredictor(model_name='model_1')
-    #res = predictor.predict('D:\\Audio Features\\UrbanSound8K\\UrbanSound8K\\audio\\fold5\\178686-0-0-63.wav')
-    res = predictor.predict('data/178686-0-0-63_80k.wav')
-    print(json.dumps(res.__dict__))
+    df = load_object('data/test_df.data')
+    result = predictor.evaluate_dataframe(df)
+    print(result)

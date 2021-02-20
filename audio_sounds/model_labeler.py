@@ -26,6 +26,15 @@ class ModelLabelEncoder:
     def inverse_transform(self, data):
         return self._le.inverse_transform(data)
 
+    def transform(self, data):
+        return self._le.transform(data)
+
+    def transform_to_categorical(self, data):
+        return to_categorical(self.transform(data))
+
+    def decode_label(self, category):
+        return self._le.inverse_transform([np.argmax(category)])
+
     def save(self, model_name):
         with open(f'data/{model_name}_labels.data', 'wb') as fout:
             pickle.dump(self, fout)
