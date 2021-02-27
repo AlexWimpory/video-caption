@@ -39,12 +39,12 @@ def find_incorrect_prediction_sample_rate(predictor, gtp, writer, path):
 
 
 def sample_rate_test():
-    with open('data/bit_rate_results10.csv', 'w', newline='') as fout:
+    with open('data/bit_rate_results_new1.csv', 'w', newline='') as fout:
         writer = csv.writer(fout)
-        predictor = ModelPredictor(model_name='model_1')
+        predictor = ModelPredictor(model_name='model_2')
         gtp = GroundtruthReader('../audio_sounds/data/UrbanSound8K_groundtruth.csv')
         find_incorrect_prediction_sample_rate_with_objects = partial(find_incorrect_prediction_sample_rate, predictor, gtp, writer)
-        apply_to_path(find_incorrect_prediction_sample_rate_with_objects, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold10', '.wav')
+        apply_to_path(find_incorrect_prediction_sample_rate_with_objects, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold1', '.wav')
 
 
 def plot_sample_rate_test_results():
@@ -61,5 +61,5 @@ if __name__ == '__main__':
     # apply_to_target_path(change_bit_rate, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold11',
     #                      '.wav', 'D:/Audio Features/new/fold11')
 
-    # sample_rate_test()
-    plot_sample_rate_test_results()
+    sample_rate_test()
+    # plot_sample_rate_test_results()
