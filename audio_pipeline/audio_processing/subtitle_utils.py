@@ -175,7 +175,15 @@ def add_styles(subs, style_list=None):
     for style in style_list:
         new_style = SSAStyle()
         # Number for position refers to the number on a keypad
-        if 'left' in style:
+        if 'top_left' in style:
+            new_style.alignment = 7
+        elif 'top_right' in style:
+            new_style.alignment = 9
+        elif 'bottom_left' in style:
+            new_style.alignment = 1
+        elif 'bottom_right' in style:
+            new_style.alignment = 3
+        elif 'left' in style:
             new_style.alignment = 4
         elif 'right' in style:
             new_style.alignment = 6

@@ -1,6 +1,6 @@
 import spacy
 from spacy.matcher.phrasematcher import PhraseMatcher
-from audio_pipeline import config, logging_config
+from audio_pipeline import pipeline_config, logging_config
 
 logger = logging_config.get_logger(__name__)
 
@@ -32,6 +32,12 @@ class SpaCyResultsProcessor:
         for entity in self.results.ents:
             ner_results.append((entity.label_, entity.text, entity.start_char, entity.end_char))
         return ner_results
+
+    def noun_chunks(self):
+        noun_chunk_results = []
+        for chunk in self.results.noun_chunks:
+            noun_chunk_results.append((chunk.text, chunk.root.head.text, chunk.start_char, chunk.end_char))
+        return noun_chunk_results
 
     def phrase_match(self):
         phrase_results = []
@@ -81,14 +87,26 @@ class SpaCyResultsProcessor:
         logger.info(f'Returning phrase match results captured {len(results)} results')
         return results
 
+    def process_speech_results_chunk(self):
+        results = []
+        chunk_results = self.noun_chunks()
+        for chunk in chunk_results:
+            speech_result_start = self.find_speech_result(chunk[2])
+            speech_result_end = self.find_speech_result(chunk[3] - 1)
+            end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 2)
+            results.append({'word': chunk[0], 'head': chunk[1], 'start': speech_result_start['start'],
+                            'end': end, 'conf': 1})
+        logger.info(f'Returning phrase chunking results captured {len(results)} results')
+        return results
+
 
 class SpaCyNaturalLanguageProcessor:
     def __init__(self):
-        self.nlp = spacy.load(config.spacy_model)
+        self.nlp = spacy.load(pipeline_config.spacy_model)
         self.matcher = PhraseMatcher(self.nlp.vocab)
-        patterns = [self.nlp.make_doc(text) for text in config.terms]
+        patterns = [self.nlp.make_doc(text) for text in pipeline_config.terms]
         self.matcher.add("TerminologyList", None, *patterns)
-        logger.info(f'Loaded NLP model {config.spacy_model}')
+        logger.info(f'Loaded NLP model {pipeline_config.spacy_model}')
 
     def get_spacy_results_processor(self, sentence, speech_results):
         return SpaCyResultsProcessor(sentence, self.nlp, speech_results, self.matcher)
@@ -119,8 +137,9 @@ class SpaCyNaturalLanguageProcessor:
 
 
 if __name__ == '__main__':
-    wrds = "Jack switch on the air conditioner even though it is loud its the middle of summer"
+    wrds = "Jack switch on the air conditioner even though it is loud it is the middle of summer"
     nlp = SpaCyNaturalLanguageProcessor()
     processor = nlp.get_spacy_results_processor(wrds, [])
     print(processor.pos_tag())
     print(processor.ner())
+    print(processor.noun_chunks())

@@ -39,21 +39,23 @@ def find_incorrect_prediction_sample_rate(predictor, gtp, writer, path):
 
 
 def sample_rate_test():
-    with open('data/bit_rate_results_new1.csv', 'w', newline='') as fout:
+    with open('data/bit_rate_results_new10.csv', 'w', newline='') as fout:
         writer = csv.writer(fout)
         predictor = ModelPredictor(model_name='model_2')
         gtp = GroundtruthReader('../audio_sounds/data/UrbanSound8K_groundtruth.csv')
         find_incorrect_prediction_sample_rate_with_objects = partial(find_incorrect_prediction_sample_rate, predictor, gtp, writer)
-        apply_to_path(find_incorrect_prediction_sample_rate_with_objects, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold1', '.wav')
+        apply_to_path(find_incorrect_prediction_sample_rate_with_objects, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold10', '.wav')
 
 
 def plot_sample_rate_test_results():
     results = DataFrame()
     header_list = ['file_name', 'start_sample_rate', 'break_percentage', 'break_sample_rate']
     for i in range(1, 11):
-        results = results.append(pd.read_csv(f'data/bit_rate_results{i}.csv', names=header_list))
+        results = results.append(pd.read_csv(f'data/bit_rate_results_new{i}.csv', names=header_list))
     grouped = results.drop(['file_name', 'break_sample_rate'], axis=1).groupby(['break_percentage', 'start_sample_rate'])
     grouped.size().unstack().plot(kind='bar', stacked=True)
+    plt.xlabel('Break Sample Frequency Percentage')
+    plt.ylabel('Number of Samples')
     plt.show()
 
 
@@ -61,5 +63,5 @@ if __name__ == '__main__':
     # apply_to_target_path(change_bit_rate, 'D:/Audio Features/UrbanSound8K/UrbanSound8K/audio/fold11',
     #                      '.wav', 'D:/Audio Features/new/fold11')
 
-    sample_rate_test()
-    # plot_sample_rate_test_results()
+    # sample_rate_test()
+    plot_sample_rate_test_results()

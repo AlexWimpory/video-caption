@@ -82,6 +82,10 @@ class SpaCyResultsProcessor:
                                 'end': end, 'conf': 1})
         return ner_results
 
+    def noun_chunks(self):
+        for chunk in self.results.noun_chunks:
+            print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text)
+
 
 class SpaCyNaturalLanguageProcessor:
     def __init__(self):
@@ -91,18 +95,24 @@ class SpaCyNaturalLanguageProcessor:
         return SpaCyResultsProcessor(sentence, self.nlp)
 
 
-if __name__ == '__main__':
-    # wrds = "Sarah Was Walking Her Dog In France The Trees Are Green".split()
-    # nep = NLTKNaturalLanguageProcessor()
-    # print(nep.get_frequency_distribution(wrds, 10))
-    # print(nep.get_frequency_distribution(nep.remove_stop_words(wrds), 10))
-    # print(nep.lemmatize(wrds))
-    # tgd_wrds = nep.pos_tag(wrds)
-    # print(tgd_wrds)
-    # print(nep.ner(tgd_wrds))
-    wrds = "welcome to my house"
+def test_nltk(sentence):
+    wrds = sentence.split()
+    nep = NLTKNaturalLanguageProcessor()
+    print(nep.get_frequency_distribution(wrds, 10))
+    print(nep.get_frequency_distribution(nep.remove_stop_words(wrds), 10))
+    print(nep.lemmatize(wrds))
+    tgd_wrds = nep.pos_tag(wrds)
+    print(tgd_wrds)
+    print(nep.ner(tgd_wrds))
+
+
+def test_spacy(sentence):
     nlp = SpaCyNaturalLanguageProcessor()
-    processor = nlp.get_spacy_results_processor(wrds)
+    processor = nlp.get_spacy_results_processor(sentence)
     print(processor.pos_tag())
     print(processor.ner())
+    processor.noun_chunks()
 
+
+if __name__ == '__main__':
+    test_spacy("sarah was walking her dog in france the trees are green")

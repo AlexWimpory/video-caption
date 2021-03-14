@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # res = predictor.predict('data/178686-0-0-63_20k.wav')
     # print(json.dumps(res.__dict__))
 
-    predictor = ModelPredictor(model_name='model_1')
+    predictor = ModelPredictor(model_name='model_2')
     df = load_object('data/test_df.data')
     result = predictor.evaluate_dataframe(df)
     print(result)

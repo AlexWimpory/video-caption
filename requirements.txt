@@ -12,5 +12,6 @@ pydub==0.24.1
 pandas==1.1.4
 seaborn==0.11.0
 nltk==3.5
-spacy==3.0.3
+spacy==2.3.5
+spacy-lookups-data==1.0.0
 pyyaml==5.3.1

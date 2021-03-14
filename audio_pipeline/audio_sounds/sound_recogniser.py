@@ -3,7 +3,7 @@ import numpy as np
 import librosa
 from pydub import AudioSegment
 from tensorflow.python.keras.models import load_model
-from audio_pipeline import config, logging_config
+from audio_pipeline import pipeline_config, logging_config
 from audio_pipeline.audio_sounds.model_labeler import ModelLabelEncoder
 from collections import Counter
 
@@ -23,7 +23,7 @@ class FeatureRecogniser:
     The model loaded can be changed in the config file
     Used to generate predictions from MFCCs """
     def __init__(self):
-        cwd = os.path.join(os.path.dirname(__file__), config.sound_model_file)
+        cwd = os.path.join(os.path.dirname(__file__), pipeline_config.sound_model_file)
         self._model = load_model(cwd)
         self._le = ModelLabelEncoder.load()
         logger.info(f'Loaded audio sound model from {cwd}')
@@ -55,9 +55,9 @@ def create_mfcc(path, sr=None):
         # Running Librosa on each chunk to calculate the MFCCs
         # This changes the format of the audio to a common format of mono and 22050Hz
         y, sr = librosa.load(path, sr=sr, mono=mono, offset=split[0] / 1000,
-                             duration=config.duration / 1000, res_type='kaiser_fast')
+                             duration=pipeline_config.duration / 1000, res_type='kaiser_fast')
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        mfccs.append((mfcc, split[0] / 1000, (split[0] / 1000) + (config.duration / 1000)))
+        mfccs.append((mfcc, split[0] / 1000, (split[0] / 1000) + (pipeline_config.duration / 1000)))
     return mfccs
 
 
@@ -71,9 +71,9 @@ def calculate_splits(time_in_millis):
     split_times = []
     start_time = 0
     end_time = 0
-    increment = int(config.duration * config.increment_percentage)
+    increment = int(pipeline_config.duration * pipeline_config.increment_percentage)
     while end_time < time_in_millis:
-        end_time = start_time + config.duration
+        end_time = start_time + pipeline_config.duration
         end_time = min(time_in_millis, end_time)
         split_times.append((start_time, end_time))
         start_time += increment
@@ -84,8 +84,8 @@ def process_overlap(sound_results):
     new_results = []
     start = 0
     end = 1
-    max_slice_size = config.duration / (config.duration * config.increment_percentage)
-    increment_time = (config.duration * config.increment_percentage) / 1000
+    max_slice_size = pipeline_config.duration / (pipeline_config.duration * pipeline_config.increment_percentage)
+    increment_time = (pipeline_config.duration * pipeline_config.increment_percentage) / 1000
     start_time = 0
     while True:
         result = process_result(sound_results[start:end])

@@ -1,6 +1,6 @@
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.python.keras.utils.np_utils import to_categorical
-from audio_pipeline import config
+from audio_pipeline import pipeline_config
 import numpy as np
 import pickle
 import os
@@ -24,6 +24,6 @@ class ModelLabelEncoder:
 
     @staticmethod
     def load():
-        cwd = os.path.join(os.path.dirname(__file__), config.sound_label_file)
+        cwd = os.path.join(os.path.dirname(__file__), pipeline_config.sound_label_file)
         with open(cwd, 'rb') as fin:
             return pickle.load(fin)
