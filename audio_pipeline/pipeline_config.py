@@ -6,5 +6,6 @@ sound_label_file = 'model/model_2_labels.data'
 increment_percentage = 0.1
 duration = 2000
 spacy_model = 'en_core_web_sm'
+custom_spacy_model = 'audio_speech/custom_spacy_model'
 pos_types = ['NN', 'NNS', 'NNP', 'NNPS']
 terms = ["air conditioner", "dog", "gunshot"]

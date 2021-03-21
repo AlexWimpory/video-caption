@@ -19,10 +19,13 @@ def main(path):
     speech_results = SpeechRecogniser().process_file(audio_file)
 
     wrds = get_words(speech_results)
-    nlp = SpaCyNaturalLanguageProcessor()
+    nlp = SpaCyNaturalLanguageProcessor(pipeline_config.spacy_model)
+    custom_nlp = SpaCyNaturalLanguageProcessor(pipeline_config.custom_spacy_model)
     processor = nlp.get_spacy_results_processor(wrds, speech_results)
+    custom_processor = custom_nlp.get_spacy_results_processor(wrds, speech_results)
     chunk_results = processor.process_speech_results_chunk()
     ner_results = processor.process_speech_results_ner()
+    ner_results.extend(custom_processor.process_speech_results_ner())
     match_results = processor.process_speech_results_match()
     speech_results = nlp.process_stopwords(speech_results, chunk_results)
 
@@ -55,4 +58,4 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main('../out/demo_1.mp4')
+    main('../out/demo_8.mp4')

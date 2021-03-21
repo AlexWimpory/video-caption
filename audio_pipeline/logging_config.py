@@ -11,7 +11,7 @@ def init():
     config_file_name = os.environ.get('CONFIG_FILE_NAME', 'logging_config.yaml')
     print(f'Configuring the logging system from config file: {config_file_name}', flush=True)
     try:
-        with open(config_file_name, 'r') as fin:
+        with open(os.path.join(os.path.dirname(__file__), config_file_name), 'r') as fin:
             yml = yaml.load(fin, Loader=yaml.FullLoader)
             logging.config.dictConfig(yml)
     except (TypeError, FileNotFoundError, ValueError):

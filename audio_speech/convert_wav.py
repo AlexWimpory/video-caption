@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-"""Convert all .flac files in a directory to .wav"""
+"""Convert all .flac files in a path to .wav"""
 
 
 def apply_to_path(f, path_name, extension):

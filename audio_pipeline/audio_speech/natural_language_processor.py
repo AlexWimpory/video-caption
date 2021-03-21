@@ -101,12 +101,12 @@ class SpaCyResultsProcessor:
 
 
 class SpaCyNaturalLanguageProcessor:
-    def __init__(self):
-        self.nlp = spacy.load(pipeline_config.spacy_model)
+    def __init__(self, model):
+        self.nlp = spacy.load(model)
         self.matcher = PhraseMatcher(self.nlp.vocab)
         patterns = [self.nlp.make_doc(text) for text in pipeline_config.terms]
         self.matcher.add("TerminologyList", None, *patterns)
-        logger.info(f'Loaded NLP model {pipeline_config.spacy_model}')
+        logger.info(f'Loaded NLP model: {model}')
 
     def get_spacy_results_processor(self, sentence, speech_results):
         return SpaCyResultsProcessor(sentence, self.nlp, speech_results, self.matcher)
@@ -138,7 +138,7 @@ class SpaCyNaturalLanguageProcessor:
 
 if __name__ == '__main__':
     wrds = "Jack switch on the air conditioner even though it is loud it is the middle of summer"
-    nlp = SpaCyNaturalLanguageProcessor()
+    nlp = SpaCyNaturalLanguageProcessor(pipeline_config.spacy_model)
     processor = nlp.get_spacy_results_processor(wrds, [])
     print(processor.pos_tag())
     print(processor.ner())

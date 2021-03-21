@@ -11,7 +11,7 @@ formatters:
     format: '%(asctime)s %(levelname)-8s %(filename)-35s %(message)s'
     datefmt: '%Y-%m-%d %H:%M:%S'
 root:
-  level: DEBUG
+  level: INFO
   handlers: [ console ]
 loggers:
   __main__:

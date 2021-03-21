@@ -115,4 +115,4 @@ def test_spacy(sentence):
 
 
 if __name__ == '__main__':
-    test_spacy("sarah was walking her dog in france the trees are green")
+    test_spacy("my poodle barks loudly at scary strangers")
