@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.python.ops.confusion_matrix import confusion_matrix
-from audio_utils.utils.file_utils import save_object
+from audio_utils.utils.audio_utils import save_object
 import numpy as np
 import pandas as pd
 from sounds import sounds_config

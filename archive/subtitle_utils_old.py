@@ -66,7 +66,7 @@ def reprocess_subtitle_file(path, max_chars=30, max_stretch_time=3, max_oldest_s
 
 
 def create_empty_video(time_in_seconds):
-    temp_file_name = tempfile.mktemp(dir='.', prefix='output_', suffix='.mp4')
+    temp_file_name = tempfile.mktemp(dir='../audio_processing', prefix='output_', suffix='.mp4')
     run_ffmpeg(f'ffmpeg -y -t {time_in_seconds} -f lavfi -i color=c=black:s=1024*768 -c:v libx264'
                f' -tune stillimage -pix_fmt yuv420p {temp_file_name}')
     logger.info(f'Created empty video file {temp_file_name} with length {time_in_seconds}s')
@@ -74,7 +74,7 @@ def create_empty_video(time_in_seconds):
 
 
 def add_subtitles_to_video(video_path, subtitle_path):
-    temp_file_name = tempfile.mktemp(dir='.', prefix='output_with_subtitles_', suffix='.mp4')
+    temp_file_name = tempfile.mktemp(dir='../audio_processing', prefix='output_with_subtitles_', suffix='.mp4')
     run_ffmpeg(f'ffmpeg -i {video_path} -i {subtitle_path} -c copy -c:s mov_text {temp_file_name}')
     logger.info(f'Added subtitles {subtitle_path} to {video_path} stored in {temp_file_name}')
     return temp_file_name

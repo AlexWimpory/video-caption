@@ -1,7 +1,7 @@
 import json
 import os
 from functools import partial
-from audio_utils.utils.file_utils import load_object, return_from_path, save_object
+from audio_utils.utils.audio_utils import load_object, return_from_path, save_object
 from logging_config import get_logger
 from sounds import sounds_config
 from sounds.audio_sound_pre_processing import prepare_audio_sound
@@ -56,6 +56,6 @@ def test_sounds_dataframe(model, path):
 
 if __name__ == '__main__':
     # save_features('UrbanSound8K_groundtruth.csv', 'D:\Audio Features\Small', 'small')
-    train_sounds('model_3', '../sounds_data/urbansounds')
-    test_sounds_file('model_3', '../sounds_data/178686-0-0-63.wav')
-    test_sounds_dataframe('model_3', '../sounds_data/model_3_test_df.data')
+    # train_sounds('model_3', '../sounds_data/urbansounds')
+    test_sounds_file('model_2', '../sounds_data/178686-0-0-63.wav')
+    test_sounds_dataframe('model_2', '../sounds_data/test_df.data')

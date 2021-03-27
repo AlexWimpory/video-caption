@@ -1,7 +1,7 @@
 from file_utils import save_object
 from speech_recogniser import SpeechRecogniser
 from speech_writer import print_to_time, save_to_srt, srt_to_video_using_audio, add_srt_to_video
-from audio_extractor import extract_audio
+from audio_utils.utils.audio_utils import extract_audio
 import simpleaudio as sa
 
 """

@@ -16,7 +16,7 @@ def vosk_model(address):
         print("Audio file must be WAV format mono PCM.")
         exit(1)
 
-    model = Model("model")
+    model = Model("../audio_speech/model")
     rec = KaldiRecognizer(model, wf.getframerate())
 
     while True:
@@ -30,6 +30,3 @@ def vosk_model(address):
 
     print(rec.FinalResult())
 
-
-if __name__ == '__main__':
-    vosk_model('data/weird.wav')

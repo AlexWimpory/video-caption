@@ -1,7 +1,6 @@
 import subprocess
 from subprocess import CalledProcessError
-
-from peek_iterator import peek_iter
+from audio_utils.utils.peek_iterator import peek_iter
 
 
 def capture_build_info(line, lines_iter):

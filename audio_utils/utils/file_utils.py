@@ -71,7 +71,3 @@ def save_object(obj, path):
 def load_object(path):
     with open(path, 'rb') as fin:
         return pickle.load(fin)
-
-
-if __name__ == '__main__':
-    apply_to_path(print, '../audio_speech', '.wav')

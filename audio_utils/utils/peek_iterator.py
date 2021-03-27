@@ -22,14 +22,3 @@ class PeekIterator(object):
 
     def has_next(self):
         return self.peeked
-
-
-if __name__ == '__main__':
-    test_iter = peek_iter([1, 2, 3, 4, 5, 6])
-    print(next(test_iter))
-    print(next(test_iter))
-    print(next(test_iter))
-    print(test_iter.peek())
-    print(test_iter.peek())
-    print(next(test_iter))
-    print(next(test_iter))

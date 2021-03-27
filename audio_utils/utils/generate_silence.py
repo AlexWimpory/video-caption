@@ -6,8 +6,7 @@ import numpy as np
 import librosa
 import subprocess
 from scipy.io.wavfile import write
-
-from file_utils import split_base_and_extension
+from audio_utils.utils.file_utils import split_base_and_extension
 
 '''
 Signal to noise ratio (SNR) can be defined as
@@ -67,7 +66,7 @@ def add_awgn(signal_file, snr, output_path, length):
 
 
 if __name__ == '__main__':
-    with open('silence.csv', 'w') as fout:
+    with open('../../random_data/processing/data/silence.csv', 'w') as fout:
         for i in range(0, 800):
             random_snr = random.randint(60, 100)
             length = random.randint(2, 6)

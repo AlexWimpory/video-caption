@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import time
-import generate_silence
+from audio_utils.utils import generate_silence
 
 # Initialise the speech recogniser model
 speech_recogniser = SpeechRecogniser()
