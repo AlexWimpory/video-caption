@@ -1,14 +1,15 @@
 from audio_processing.ground_truth_processor import GroundtruthReader
 from audio_speech.speech_recogniser import SpeechRecogniser
-from levenshtein import levenshtein
-from file_utils import apply_to_path
+from utils.levenshtein import levenshtein
 import matplotlib.pyplot as plt
 import os
 import csv
 import time
 from audio_utils.utils import generate_silence
+from utils.file_utils import apply_to_path
 
 # Initialise the speech recogniser model
+
 speech_recogniser = SpeechRecogniser()
 
 """
@@ -32,7 +33,7 @@ def compare_speech(groundtruth, file_name):
 def write_speech_results(path, extenstion, groundtruth):
     """Creates a .csv file with the calculated Levenstein distance, file name, model output and ground truth
     for each file in the path"""
-    with open('data/speech_results.csv', 'w', newline='') as fout:
+    with open('../../random_data/speech/data/speech_results.csv', 'w', newline='') as fout:
         writer = csv.writer(fout)
         gtp = GroundtruthReader(groundtruth)
 
@@ -56,7 +57,7 @@ def write_speech_results(path, extenstion, groundtruth):
 
 def format_speech_csv(filename):
     """Formats the .csv file from write_speech_results to be easier to read and in order"""
-    with open(filename, 'r') as fin, open('data/speech_results_formated.txt', 'w', newline='') as fout:
+    with open(filename, 'r') as fin, open('../../random_data/speech/data/speech_results_formated.txt', 'w', newline='') as fout:
         reader = csv.reader(fin)
         sortedlist = sorted(reader, key=lambda row: row[0], reverse=False)
         for row in sortedlist:
@@ -81,7 +82,7 @@ def calculate_accuracy(filename):
 
 def compare_noise(groundtruth, filename, snr_start, increment, snr_end):
     """Adds AWGN to a file and records the model output and Levenshtein distance for each value of SNR"""
-    with open('data/speech_results_noise.txt', 'w', newline='') as fout:
+    with open('../../random_data/speech/data/speech_results_noise.txt', 'w', newline='') as fout:
         writer = csv.writer(fout)
         base_filename = os.path.splitext(os.path.basename(filename))[0]
         gtp = GroundtruthReader(groundtruth)
@@ -101,7 +102,7 @@ def plot_snr_vs_lev():
     """Plots a grpah showing the SNR vs the Leveshtein distance"""
     x = []
     y = []
-    with open('data/speech_results_noise.txt', 'r') as csvfile:
+    with open('../../random_data/speech/data/speech_results_noise.txt', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         next(csvfile)
         for row in plots:
@@ -133,8 +134,8 @@ if __name__ == '__main__':
     print(end - start)
 
     # Format speech file
-    format_speech_csv('data/speech_results.csv')
-    calculate_accuracy('data/speech_results.csv')
+    format_speech_csv('../../random_data/speech/data/speech_results.csv')
+    calculate_accuracy('../../random_data/speech/data/speech_results.csv')
 
     # # Noise test
     # compare_noise('../audio_speech/data/librispeech_joined_groundtruth.csv',

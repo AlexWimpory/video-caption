@@ -16,7 +16,7 @@ def vosk_model(address):
         print("Audio file must be WAV format mono PCM.")
         exit(1)
 
-    model = Model("../audio_speech/model")
+    model = Model("../audio_utils/tests/vosk_test/model")
     rec = KaldiRecognizer(model, wf.getframerate())
 
     while True:

@@ -1,8 +1,8 @@
-from file_utils import save_object
-from speech_recogniser import SpeechRecogniser
-from speech_writer import print_to_time, save_to_srt, srt_to_video_using_audio, add_srt_to_video
+from tests.vosk_test.speech_recogniser import SpeechRecogniser
+from tests.vosk_test.speech_writer import print_to_time, save_to_srt, srt_to_video_using_audio, add_srt_to_video
 from audio_utils.utils.audio_utils import extract_audio
 import simpleaudio as sa
+from utils.file_utils import save_object
 
 """
 Main module for speech processing
@@ -11,7 +11,7 @@ Main module for speech processing
 
 def demo_wav():
     play_audio = True
-    audio_file_name = 'data/19-198-0001.wav'
+    audio_file_name = '../../../random_data/speech/data/19-198-0001.wav'
     print(f'Processing audio file {audio_file_name}')
     results = SpeechRecogniser().process_file(audio_file_name)
     print(results)
@@ -32,7 +32,7 @@ def demo_wav():
 
 def demo_mp4():
     play_audio = False
-    video_file_name = 'data/YvonneAkiSawyerr_2020T-480p.mp4'
+    video_file_name = '../../../random_data/speech/data/YvonneAkiSawyerr_2020T-480p.mp4'
     audio_directory = 'data/audio'
     print(f'Extracting audio from video {video_file_name}')
     audio_file_name = extract_audio(video_file_name, audio_directory)

@@ -1,7 +1,7 @@
 from time import sleep
 from pysubs2 import SSAEvent, make_time, SSAFile
 import subprocess
-import config
+from tests.vosk_test import config
 
 
 def print_to_time(results):

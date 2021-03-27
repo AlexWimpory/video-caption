@@ -1,7 +1,7 @@
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import wave
 import json
-import config
+from tests.vosk_test import config
 
 """
 Module that runs the Vosk model on the input file, returning words and timings

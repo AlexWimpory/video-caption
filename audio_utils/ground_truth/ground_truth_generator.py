@@ -29,7 +29,7 @@ def process_fsd50k_ground_truth():
 
 def process_librispeech_ground_truth():
     """Process librispeech record to standard format"""
-    with open('../../audio_speech/data/librispeech_groundtruth.csv', 'w', newline='') as fout:
+    with open('../../random_data/speech/data/librispeech_groundtruth.csv', 'w', newline='') as fout:
         path = 'D:\\Audio Speech\\LibriSpeech\\train-clean-100'
         writer = csv.writer(fout)
         for root, dirs, files in os.walk(path):

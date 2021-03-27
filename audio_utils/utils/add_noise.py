@@ -51,7 +51,7 @@ def add_awgn(signal_file, snr):
     signal = np.interp(signal, (signal.min(), signal.max()), (-1, 1))
     noise = get_white_noise(signal, snr=snr)
     signal_noise = signal + noise
-    write('data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
+    write('../../random_data/speech/data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
     subprocess.call(['ffmpeg', '-y', '-i', 'data/speech_noisy_broken.wav', '-ar', '44100', '-ac', '1',
                      '-acodec', 'pcm_s16le', 'data/speech_noisy_fixed.wav'])
 
@@ -67,11 +67,11 @@ def add_real_world_noise(signal_file, noise_file, snr):
         noise = noise[0:len(signal)]
     noise = get_noise_from_sound(signal, noise, snr=snr)
     signal_noise = signal + noise
-    write('data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
+    write('../../random_data/speech/data/speech_noisy_broken.wav', sr, signal_noise.astype(np.float32))
     subprocess.call(['ffmpeg', '-y', '-i', 'data/speech_noisy_broken.wav', '-ar', '44100', '-ac', '1',
                      '-acodec', 'pcm_s16le', 'data/speech_noisy_fixed.wav'])
 
 
 if __name__ == '__main__':
-    add_awgn('data/10_silence.wav', 80)
+    add_awgn('../../random_data/speech/data/10_silence.wav', 80)
     #add_real_world_noise('data/19-198-0001.wav', 'data/Welcome.wav', 10)

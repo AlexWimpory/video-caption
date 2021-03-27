@@ -1,8 +1,8 @@
 audio_target_dir = '../out'
 frame_to_read = 4000
-vosk_model_dir = 'model'
-sound_model_file = 'model/model_2.hdf5'
-sound_label_file = 'model/model_2_labels.data'
+vosk_model_dir = 'tests/vosk_test/model'
+sound_model_file = 'tests/vosk_test/model/model_2.hdf5'
+sound_label_file = 'tests/vosk_test/model/model_2_labels.data'
 increment_percentage = 0.1
 duration = 2000
 spacy_model = 'en_core_web_sm'

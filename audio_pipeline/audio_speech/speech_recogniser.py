@@ -2,7 +2,7 @@ import os
 import wave
 import json
 import audio_pipeline.logging_config as logging_config
-import config
+from tests.vosk_test import config
 from vosk import Model, KaldiRecognizer
 
 """
