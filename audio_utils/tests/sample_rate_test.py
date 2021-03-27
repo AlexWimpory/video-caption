@@ -29,7 +29,7 @@ def sample_rate_test():
     with open('../../random_data/processing/data/bit_rate_results_new10.csv', 'w', newline='') as fout:
         writer = csv.writer(fout)
         predictor = ModelPredictor(model_name='model_2')
-        gtp = GroundtruthReader('../../random_data/sounds/data/UrbanSound8K_groundtruth.csv')
+        gtp = GroundtruthReader('../ground_truth/data/UrbanSound8K_groundtruth.csv')
         find_incorrect_prediction_sample_rate_with_objects = partial(find_incorrect_prediction_sample_rate, predictor,
                                                                      gtp, writer)
         apply_to_path(find_incorrect_prediction_sample_rate_with_objects,

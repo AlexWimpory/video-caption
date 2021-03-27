@@ -8,8 +8,8 @@ from file_utils import append_to_file_name
 
 def process_tut_ground_truth():
     """Process TUT record to standard format"""
-    with open('../../random_data/sounds/data/tut_meta.txt', 'r') as fin, open(
-            '../../random_data/sounds/data/tut_groundtruth.csv', 'w', newline='') as fout:
+    with open('data/tut_meta.txt', 'r') as fin, open(
+            'data/tut_groundtruth.csv', 'w', newline='') as fout:
         reader = csv.reader(fin, delimiter='\t')
         writer = csv.writer(fout)
         for row in reader:
@@ -18,8 +18,8 @@ def process_tut_ground_truth():
 
 def process_fsd50k_ground_truth():
     """Process FSD50K record to standard format"""
-    with open('../../random_data/sounds/data/fsd50k_dev.csv', 'r') as fin, open(
-            '../../random_data/sounds/data/fsd50k_dev_groundtruth.csv', 'w', newline='') as fout:
+    with open('data/fsd50k_dev.csv', 'r') as fin, open(
+            'data/fsd50k_dev_groundtruth.csv', 'w', newline='') as fout:
         reader = csv.reader(fin)
         writer = csv.writer(fout)
         for row in reader:
@@ -44,8 +44,8 @@ def process_librispeech_ground_truth():
 
 def process_urbansound8k_ground_truth():
     """Process urbansound8k record to standard format"""
-    with open('../../random_data/sounds/data/UrbanSound8K.csv', 'r') as fin, open(
-            '../../random_data/sounds/data/UrbanSound8K_groundtruth.csv', 'w', newline='') as fout:
+    with open('data/UrbanSound8K.csv', 'r') as fin, open(
+            'data/UrbanSound8K_groundtruth.csv', 'w', newline='') as fout:
         reader = csv.reader(fin)
         writer = csv.writer(fout)
         for row in reader:
