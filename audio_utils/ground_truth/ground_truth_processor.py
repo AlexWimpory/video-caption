@@ -15,13 +15,12 @@ class GroundtruthReader:
                 else:
                     self.groundtruth_records[row[0]] = row[1]
 
-
     def lookup_filename(self, filename):
         return self.groundtruth_records[filename]
 
 
 if __name__ == '__main__':
-    gtp = GroundtruthReader('data/fsd50k_dev_groundtruth.csv')
+    gtp = GroundtruthReader('../audio_sounds/data/fsd50k_dev_groundtruth.csv')
     print(gtp.lookup_filename('407490'))
     #gtp = GroundtruthReader('../audio_speech/data/librispeech_groundtruth.csv')
     #print(gtp.lookup_filename("19-198-0009"))

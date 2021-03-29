@@ -58,4 +58,4 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main('../out/demo_12.mp4')
+    main('../out/demo_8.mp4')

@@ -3,6 +3,9 @@ from audio_pipeline.audio_processing.peek_iterator import peek_iter
 
 
 def capture_build_info(line, lines_iter):
+    """
+    Helper method to capture the build information
+    """
     build_info = [line]
     while not lines_iter.peek().startswith('Input'):
         build_info.append(next(lines_iter))
@@ -10,6 +13,9 @@ def capture_build_info(line, lines_iter):
 
 
 def capture_info(line, lines_iter, first_line=True):
+    """
+    Helper method to capture the other results information
+    """
     in_info = list()
     if first_line:
         in_info.append(line)
@@ -21,10 +27,19 @@ def capture_info(line, lines_iter, first_line=True):
 
 
 def run_ffmpeg(command):
+    """
+    Run FFmpeg from the shell and capture output (stops printing to the console)
+    :param command: String command
+    :return: Results object
+    """
+    # Run command
     complete_process = subprocess.run(command, shell=True, capture_output=True)
+    # Check for failure and stop
     complete_process.check_returncode()
+    # Grab the results
     lines = complete_process.stderr.decode('utf-8').split('\n')
     lines_iter = peek_iter(lines)
+    # Put into results object
     results = FFMPEGResults()
     results.return_code = complete_process.returncode
     while lines_iter.has_next():
@@ -45,6 +60,9 @@ def run_ffmpeg(command):
 
 
 class FFMPEGResults:
+    """
+    Results object
+    """
     def __init__(self):
         self.return_code = 0
         self.build_info = ''

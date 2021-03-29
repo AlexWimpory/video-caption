@@ -15,7 +15,6 @@ class GroundtruthReader:
                 else:
                     self.groundtruth_records[row[0]] = row[1]
 
-
     def lookup_filename(self, filename):
         return self.groundtruth_records[filename]
 

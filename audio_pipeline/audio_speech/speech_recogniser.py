@@ -24,8 +24,14 @@ class SpeechRecogniser:
         logger.info(f'Loaded speech recognition model from {cwd}')
 
     def process_file(self, file_name):
+        """
+        Run the Vosk model on the input file
+        :param file_name: Input wav or mp3 file
+        :return: List of dictionaries containing: confidence, start time, end time and the predicted word
+        """
         logger.info(f'Recognising speech for {file_name}')
         wf = wave.open(file_name, "rb")
+        # Check to see if the audio file can be read by the Vosk model
         if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
             raise Exception(f'Invalid file format for {file_name}')
         rec = KaldiRecognizer(self.model, wf.getframerate())
@@ -42,6 +48,7 @@ class SpeechRecogniser:
                     # If we reach here we have accepted the translation of a section of text
                     results.extend(result['result'])
         result = json.loads(rec.FinalResult())
+        # Add to results list
         if len(result['text']) > 0:
             results.extend(result['result'])
         logger.info(f'Processed speech, captured {len(results)} results')
@@ -49,4 +56,7 @@ class SpeechRecogniser:
 
 
 def get_words(results):
+    """
+    Join words of the speech recogniser's output into a single sentence
+    """
     return ' '.join([result['word'] for result in results])

@@ -4,6 +4,7 @@ from functools import partial
 from logging_config import get_logger
 from sounds import sounds_config
 from sounds.audio_sound_pre_processing import prepare_audio_sound
+from sounds.ground_truth_processor import GroundtruthReader
 from sounds.model_labeler import ModelLabelEncoder
 from sounds.model_predictor import ModelPredictor
 import pandas as pd
@@ -16,9 +17,10 @@ from utils.file_utils import return_from_path, save_object, load_object
 logger = get_logger(__name__)
 
 
-def save_features(groundtruth, path, dataset_name):
+def save_features(groundtruth, path, dataset_name, filter_label=None):
+    gtp = GroundtruthReader(f'{sounds_config.sounds_data_dir}/{groundtruth}')
     prepare_audio_sound_groundtruth = partial(prepare_audio_sound,
-                                              f'{sounds_config.sounds_data_dir}/{groundtruth}')
+                                              gtp, filter_label)
     if not os.path.isdir(f'{sounds_config.sounds_data_dir}/{dataset_name}'):
         os.mkdir(f'{sounds_config.sounds_data_dir}/{dataset_name}')
     ftrs = return_from_path(prepare_audio_sound_groundtruth,
@@ -28,9 +30,11 @@ def save_features(groundtruth, path, dataset_name):
     save_object(audio_sound_df, f'{sounds_config.sounds_data_dir}/{dataset_name}/{os.path.basename(path)}.data')
 
 
-def train_sounds(model, path):
+def train_sounds(model, paths):
     """Load the data and process it before training and testing"""
-    dataframes = return_from_path(load_object, path, '.data')
+    dataframes = []
+    for path in paths:
+        dataframes.extend(return_from_path(load_object, path, '.data'))
     features_and_labels = pd.concat(dataframes)
     labels = features_and_labels['labels'].tolist()
     ftrs = np.array(features_and_labels['mfcc'].to_list())
@@ -55,7 +59,7 @@ def test_sounds_dataframe(model, path):
 
 
 if __name__ == '__main__':
-    # save_features('UrbanSound8K_groundtruth.csv', 'D:\Audio Features\Small', 'small')
-    train_sounds('model_4', '../sounds_data/urbansounds')
-    test_sounds_file('model_4', '../sounds_data/178686-0-0-63.wav')
-    test_sounds_dataframe('model_4', '../sounds_data/test_df.data')
+    save_features('fsd50k_dev_groundtruth.csv', 'D:\\Audio Features\\new_2', 'clapping', 'Clapping')
+    train_sounds('model_4', ['../sounds_data/urbansounds', '../sounds_data/clapping'])
+    # test_sounds_file('model_4', '../sounds_data/178686-0-0-63.wav')
+    # test_sounds_dataframe('model_4', '../sounds_data/test_df.data')

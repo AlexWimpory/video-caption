@@ -1,4 +1,5 @@
 import os
+import traceback
 from os.path import dirname, basename, splitext, join
 import pickle
 
@@ -36,10 +37,11 @@ def return_from_path(f, path_name, extension):
             if file.endswith(extension):
                 try:
                     result = f(os.path.join(root, file))
-                    results.append(result)
-                except BaseException as err:
+                    if result is not None:
+                        results.append(result)
+                except BaseException:
                     print(f'Unable to process {file} in {root}')
-                    print(err)
+                    traceback.print_exc()
     return results
 
 

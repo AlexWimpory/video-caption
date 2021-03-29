@@ -1,6 +1,6 @@
 import subprocess
 import os
-from audio_utils.utils.file_utils import apply_to_path
+from utils.file_utils import apply_to_path
 
 
 def extract_audio(file_name, audio_directory):

@@ -11,9 +11,9 @@ def apply_to_path(f, path_name, extension):
                 f(os.path.join(root, file))
 
 
-def convert(filepath):
+def convert_flac(filepath):
     subprocess.call(['ffmpeg', '-i', filepath, filepath.replace('.flac', '.wav')])
 
 
 if __name__ == '__main__':
-    apply_to_path(convert, 'D:\\Audio Speech\\LibriSpeech\\train-clean-100', '.flac')
+    apply_to_path(convert_flac, 'D:\\Audio Speech\\LibriSpeech\\train-clean-100', '.flac')
