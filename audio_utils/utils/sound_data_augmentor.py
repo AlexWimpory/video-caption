@@ -38,7 +38,7 @@ def change_bit_rate_filter(target_path, gtp, filter_label, file_name):
 if __name__ == '__main__':
     ground_truth_reader = GroundtruthReader('../ground_truth/data/fsd50k_dev_groundtruth.csv')
     prepare_audio_sound_groundtruth = partial(change_bit_rate_filter,
-                                              'D:\\Audio Features\\new_2', ground_truth_reader, 'Clapping')
+                                              'D:\\Audio Features\\new_4', ground_truth_reader, 'Bell')
     apply_to_path(prepare_audio_sound_groundtruth,
                   'D:\Audio Features\FSD50K\FSD50K.dev_audio',
                   '.wav')

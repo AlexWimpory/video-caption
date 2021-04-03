@@ -19,16 +19,24 @@ Performs the following operations:
 
 
 class FeatureRecogniser:
-    """Class which contains the sound classification model and the associated label encoder
+    """
+    Class which contains the sound classification model and the associated label encoder
     The model loaded can be changed in the config file
-    Used to generate predictions from MFCCs """
+    Used to generate predictions from MFCCs
+    """
     def __init__(self):
         cwd = os.path.join(os.path.dirname(__file__), pipeline_config.sound_model_file)
+        # Load model and associated label encoder
         self._model = load_model(cwd)
         self._le = ModelLabelEncoder.load()
         logger.info(f'Loaded audio sound model from {cwd}')
 
     def process_file(self, file_name):
+        """
+        Generate list of dictionaries of classifications from MFCCs
+        :param file_name: File to generate MFCCs from
+        :return: List of dictionaries containing the predictied class, start/end time and the confidence
+        """
         logger.info(f'Creating MFCCs for {file_name}')
         mfccs = create_mfcc(file_name)
         results = []
@@ -46,8 +54,11 @@ class FeatureRecogniser:
 
 
 def create_mfcc(path, sr=None):
-    """Create an mfcc from the passed path"""
+    """
+    Create an mfcc from the passed path
+    """
     wave = AudioSegment.from_wav(path)
+    # Get split times using overlap
     splits = calculate_splits(len(wave))
     mfccs = []
     mono = wave.channels != 1
@@ -62,12 +73,16 @@ def create_mfcc(path, sr=None):
 
 
 def mfcc_mean(mfcc):
-    """MFCC matrix not a reasonable input for the MLP model so the matrix is converted to vector"""
+    """
+    MFCC matrix not a reasonable input for the MLP model so the matrix is converted to vector
+    """
     return np.mean(mfcc.T, axis=0)
 
 
 def calculate_splits(time_in_millis):
-    """A function that given the length of an audio file create overlapping windows of capture time"""
+    """
+    A function that given the length of an audio file create overlapping windows of capture time
+    """
     split_times = []
     start_time = 0
     end_time = 0
@@ -81,6 +96,9 @@ def calculate_splits(time_in_millis):
 
 
 def process_overlap(sound_results):
+    """
+    Flatten overlap
+    """
     new_results = []
     start = 0
     end = 1
@@ -102,6 +120,9 @@ def process_overlap(sound_results):
 
 
 def process_result(sound_results_slice):
+    """
+    Find most common option or if no clear winner use the highest confidence
+    """
     counter = Counter(result['class'] for result in sound_results_slice)
     classes = []
     last_count = 0

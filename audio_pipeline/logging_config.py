@@ -23,6 +23,7 @@ def init():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
+# Call init when the module is imported
 init()
 
 

@@ -5,7 +5,6 @@ import numpy as np
 import pickle
 import os
 
-
 """
 Build and save an encoder that maps labels onto numerical values
 * Numerical labels = [0,1,2]

@@ -6,7 +6,7 @@ logger = logging_config.get_logger(__name__)
 
 
 def extract_audio(file_name, audio_directory):
-    """Extract the audio from a .mp4 into a .wav file"""
+    """Extract the audio from any video format into a .wav file"""
     basename = os.path.splitext(os.path.basename(file_name))[0]
     audio_file_name = audio_directory + '/' + basename + '.wav'
     logger.info(f'Extracting audio from {file_name}')

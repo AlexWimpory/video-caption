@@ -11,13 +11,20 @@ logger = get_logger(__name__)
 
 
 def main(path):
+    """
+    Run the pipeline which processes a video file to produce a new subtitled video file
+    :param path: Input video path
+    """
     logger.info(f'Processing video file {path}')
+    # Extract audio
     audio_file = extract_audio(path, pipeline_config.audio_target_dir)
 
+    # Generate sound classification results and speech recogniser results
     sound_results = FeatureRecogniser().process_file(audio_file)
     sound_results = process_overlap(sound_results)
     speech_results = SpeechRecogniser().process_file(audio_file)
 
+    # NLP
     wrds = get_words(speech_results)
     nlp = SpaCyNaturalLanguageProcessor(pipeline_config.spacy_model)
     custom_nlp = SpaCyNaturalLanguageProcessor(pipeline_config.custom_spacy_model)
@@ -29,6 +36,7 @@ def main(path):
     match_results = processor.process_speech_results_match()
     speech_results = nlp.process_stopwords(speech_results, chunk_results)
 
+    # Add Speech recogniser results, sound classification results and NLP results to a subtitle file
     subs_1 = save_to_subtitles(speech_results,
                                lambda speech_result: speech_result['word'])
     subs_1 = compress_subs(subs_1)
@@ -49,13 +57,14 @@ def main(path):
     combined_subs = append_subs(combined_subs, subs_5, style='bottom_left_pred')
     combined_subs = remove_tiny_subs(combined_subs, duration_millis=1000, left_millis=None,
                                      right_millis=None, style='top')
-
     subtitle_file_name = os.path.splitext(path)[0] + '.ass'
     create_styles(combined_subs)
     combined_subs.save(subtitle_file_name)
+
+    # Burn to a video
     burn_subtitles_into_video(path, subtitle_file_name, pipeline_config.audio_target_dir)
     logger.info(f'Done processing {audio_file}')
 
 
 if __name__ == '__main__':
-    main('../out/demo_8.mp4')
+    main('../out/demo_13.mp4')

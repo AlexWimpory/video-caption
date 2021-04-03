@@ -1,6 +1,8 @@
 import numpy as np
 
 """
+Had some difficulties getting the levenshtein package to work, so implemented the code from here:
+https://stackabuse.com/levenshtein-distance-and-text-similarity-in-python/
 Calculates the Levenshtein distance of 2 input strings
 Levenshtein distance = The number of changes required to make 2 strings the same
 """

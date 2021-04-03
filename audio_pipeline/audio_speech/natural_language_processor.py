@@ -75,6 +75,9 @@ class SpaCyResultsProcessor:
                 return speech
 
     def process_speech_results_tag(self):
+        """
+        Map POS tagging results back to timeline
+        """
         results = []
         pos_results = self.pos_tag()
         for word, typ, start_char in pos_results:
@@ -86,6 +89,9 @@ class SpaCyResultsProcessor:
         return results
 
     def process_speech_results_ner(self):
+        """
+        Map NER results back to timeline
+        """
         results = []
         ner_results = self.ner()
         for entity in ner_results:
@@ -98,6 +104,9 @@ class SpaCyResultsProcessor:
         return results
 
     def process_speech_results_match(self):
+        """
+        Map phrase matching results back to timeline
+        """
         results = []
         phrase_results = self.phrase_match()
         for entity in phrase_results:
@@ -110,6 +119,9 @@ class SpaCyResultsProcessor:
         return results
 
     def process_speech_results_chunk(self):
+        """
+        Map dependency parsing results back to timeline
+        """
         results = []
         chunk_results = self.noun_chunks()
         for chunk in chunk_results:
@@ -123,6 +135,9 @@ class SpaCyResultsProcessor:
 
 
 class SpaCyNaturalLanguageProcessor:
+    """
+    Run the SpaCy model
+    """
     def __init__(self, model):
         self.nlp = spacy.load(model)
         self.matcher = PhraseMatcher(self.nlp.vocab)

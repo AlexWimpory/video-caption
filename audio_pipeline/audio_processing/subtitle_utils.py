@@ -1,5 +1,4 @@
 import tempfile
-
 from pysubs2 import SSAFile, SSAStyle, Color, SSAEvent, make_time
 from audio_pipeline import logging_config
 from audio_pipeline.audio_processing.ffmpeg_processor import run_ffmpeg
@@ -8,7 +7,9 @@ logger = logging_config.get_logger(__name__)
 
 
 def _adjust_for_clashing_subs(combined_subs, working_sub, exclude):
-    """Helper function for the append code"""
+    """
+    Helper function for the append code.  Looking for overlapping subtitles and make adjustments
+    """
     # If we haven't got a set of subs to check against early return
     if not combined_subs or not exclude:
         return working_sub, None
@@ -35,7 +36,9 @@ def _adjust_for_clashing_subs(combined_subs, working_sub, exclude):
 
 
 def append_subs(combined_subs, new_subs, style=None, formatter=None, exclude=None):
-    """Append a set of subs to a current set avoiding a clash if needed.  Also allows for styling and formatting"""
+    """
+    Append a set of subs to a current set avoiding a clash if needed.  Also allows for styling and formatting
+    """
     if exclude is None:
         exclude = []
     new_combined_subs = SSAFile()
@@ -61,7 +64,9 @@ def append_subs(combined_subs, new_subs, style=None, formatter=None, exclude=Non
 
 
 def flatten_subs(starting_subs, style=None):
-    """Take some subs and merge them together where that are effectively the same but over different periods"""
+    """
+    Take some subs and merge them together (adjacent subtitle which are the same)
+    """
     new_subs = SSAFile()
     for sub in starting_subs:
         # Standard style exit
@@ -84,7 +89,9 @@ def flatten_subs(starting_subs, style=None):
 
 
 def merge_subs(starting_subs, tolerance_millis=1000, style=None):
-    """Take some subs and eliminate any blank spots where they are less than a tolerance"""
+    """
+    Take some subs and eliminate any blank spots where they are less than a tolerance (default of 1 second)
+    """
     merged_subs = SSAFile()
     for sub in starting_subs:
         if style and sub.style != style:
@@ -101,7 +108,9 @@ def merge_subs(starting_subs, tolerance_millis=1000, style=None):
 
 
 def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis=10000, style=None):
-    """Mostly for the use of speech subtitles this will take individual words and create a running subtitle"""
+    """
+    Mostly for the use of speech subtitles this will take individual words and create a running subtitle
+    """
     # Phase 1 based on character count so that we dont overflow the screen
     # Phase 2 is to make sure that the oldest word on the screen has not been there for too long
     # First remove gaps where they exist
@@ -117,16 +126,20 @@ def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis
         if char_count > max_chars:
             char_count = len(sub.text)
             oldest_start_time = sub.start
+        # Check if subtitle has been on screen for too long then reset
         elif sub.start - oldest_start_time > max_oldest_millis:
             char_count = len(sub.text)
             oldest_start_time = sub.start
+        # If there is a gap in time between subtitles then reset
         elif len(compressed_subs) > 0 and sub.start != compressed_subs[-1].end:
             char_count = len(sub.text)
             oldest_start_time = sub.start
+        # Add this sub
         elif len(compressed_subs) > 0:
             sub.text = compressed_subs[-1].text + ' ' + sub.text
             char_count += 1
         compressed_subs.append(sub)
+    # Append all the other subs
     if style:
         for sub in merged_subs:
             if sub.style is not style:
@@ -136,14 +149,16 @@ def compress_subs(subs, max_chars=30, max_stretch_millis=3000, max_oldest_millis
 
 
 def remove_tiny_subs(subs, duration_millis=1000, left_millis=2000, right_millis=2000, style=None):
-    """Remove any subs that are out on their own or too short"""
+    """
+    Remove any subs that are out on their own or too short
+    """
     copy_subs = SSAFile()
     new_subs = SSAFile()
     for sub in subs:
         if (style and sub.style is style) or not style:
             copy_subs.append(sub)
     for i, sub in enumerate(copy_subs):
-        # if it longer it goes in
+        # if it is longer it goes in
         if sub.duration >= duration_millis:
             new_subs.append(sub)
             continue
@@ -169,7 +184,9 @@ def remove_tiny_subs(subs, duration_millis=1000, left_millis=2000, right_millis=
 
 
 def add_styles(subs, style_list=None):
-    """Contains different colours, positions and fonts for the subtitles"""
+    """
+    Add styles to the subtitle file based on the style strings in each individual subtitle
+    """
     if style_list is None:
         style_list = []
     for style in style_list:
@@ -218,17 +235,17 @@ def add_styles(subs, style_list=None):
     return subs
 
 
-def copy_ssa_file(ssa_file):
-    new_ssa = SSAFile()
-    new_ssa.import_styles(ssa_file)
-    return new_ssa
-
-
-def save_to_subtitles(results, f):
+def save_to_subtitles(results, formatter):
+    """
+    Save to subtitle file
+    :param results: Dictionary containing info and start/end times
+    :param formatter: Apply text formating to the subtitle
+    :return: New subtitle file
+    """
     subs = SSAFile()
     for result in results:
         event = SSAEvent(start=make_time(s=result['start']),
-                         end=make_time(s=result['end']), text=f(result))
+                         end=make_time(s=result['end']), text=formatter(result))
         if 'highlight' in result and result['highlight']:
             event.style = 'red'
         subs.append(event)
@@ -237,6 +254,9 @@ def save_to_subtitles(results, f):
 
 
 def create_styles(subs):
+    """
+    Gather text from subtitles and call the subtitle adder
+    """
     styles = set()
     for sub in subs:
         styles.add(sub.style)
@@ -244,6 +264,13 @@ def create_styles(subs):
 
 
 def burn_subtitles_into_video(video_path, subtitle_path, output_path):
+    """
+    Create new video with subtitles burned in
+    :param video_path: input video path
+    :param subtitle_path: subtitle input path
+    :param output_path: video output path
+    :return: File name that it has written to
+    """
     temp_file_name = tempfile.mktemp(dir=output_path, prefix='output_with_hard_subtitles_', suffix='.mp4')
     # Handle srt files if needed
     if subtitle_path.endswith('.srt.'):

@@ -1,4 +1,3 @@
-from ground_truth.ground_truth_processor import GroundtruthReader
 import os
 from sounds.mfcc_creator import mfcc_mean, create_mfcc
 
