@@ -18,7 +18,7 @@ Performs the following operations:
 """
 
 
-class FeatureRecogniser:
+class SoundRecogniser:
     """
     Class which contains the sound classification model and the associated label encoder
     The model loaded can be changed in the config file

@@ -99,7 +99,7 @@ def test_nltk(sentence):
     wrds = sentence.split()
     nep = NLTKNaturalLanguageProcessor()
     print(nep.get_frequency_distribution(wrds, 10))
-    print(nep.get_frequency_distribution(nep.remove_stop_words(wrds), 10))
+    print(nep.remove_stop_words(wrds))
     print(nep.lemmatize(wrds))
     tgd_wrds = nep.pos_tag(wrds)
     print(tgd_wrds)
@@ -115,4 +115,4 @@ def test_spacy(sentence):
 
 
 if __name__ == '__main__':
-    test_spacy("my poodle barks loudly at scary strangers")
+    test_nltk("The month of September")

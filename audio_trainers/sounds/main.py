@@ -59,8 +59,9 @@ def test_sounds_dataframe(model, path):
 
 
 if __name__ == '__main__':
-    # save_features('fsd50k_dev_groundtruth.csv', 'D:\\Audio Features\\FSD50K\\FSD50K.dev_audio', 'keys_jangling', 'Keys_jangling')
-    train_sounds('model_4', ['../sounds_data/urbansounds_basic', '../sounds_data/clapping', '../sounds_data/keys_jangling',
-                             '../sounds_data/bell'])
-    # test_sounds_file('model_4', '../sounds_data/178686-0-0-63.wav')
-    # test_sounds_dataframe('model_4', '../sounds_data/model_4_test_df.data')
+    # save_features('fsd50k_dev_groundtruth.csv', 'D:\\Audio Features\\FSD50K\\FSD50K.dev_audio', 'walk', 'Walk_and_footsteps')
+    # train_sounds('model_5', ['../sounds_data/urbansounds_basic', '../sounds_data/clapping', '../sounds_data/keys_jangling',
+    #                          '../sounds_data/bell', '../sounds_data/laughter', '../sounds_data/walk', '../sounds_data/gong',
+    #                          '../sounds_data/bird', '../sounds_data/coin', '../sounds_data/hi_hat', '../sounds_data/trumpet'])
+    test_sounds_file('model_2', '../sounds_data/speech_noisy_broken.wav')
+    # test_sounds_dataframe('model_2', '../sounds_data/test_df.data')

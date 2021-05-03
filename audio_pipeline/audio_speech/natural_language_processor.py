@@ -82,6 +82,7 @@ class SpaCyResultsProcessor:
         pos_results = self.pos_tag()
         for word, typ, start_char in pos_results:
             speech_result = self.find_speech_result(start_char)
+            # Set a lower limit of 1 second for each result to be displayed as a subtitle
             end = speech_result['start'] + max(speech_result['end'] - speech_result['start'], 1)
             results.append({'word': word, 'type': typ, 'start': speech_result['start'],
                             'end': end, 'conf': speech_result['conf']})
@@ -97,6 +98,7 @@ class SpaCyResultsProcessor:
         for entity in ner_results:
             speech_result_start = self.find_speech_result(entity[2])
             speech_result_end = self.find_speech_result(entity[3] - 1)
+            # Set a lower limit of 2 seconds for each result to be displayed as a subtitle
             end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 2)
             results.append({'word': entity[1], 'type': entity[0], 'start': speech_result_start['start'],
                             'end': end, 'conf': 1})
@@ -112,6 +114,7 @@ class SpaCyResultsProcessor:
         for entity in phrase_results:
             speech_result_start = self.find_speech_result(entity[2])
             speech_result_end = self.find_speech_result(entity[3] - 1)
+            # Set a lower limit of 2 seconds for each result to be displayed as a subtitle
             end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 2)
             results.append({'word': entity[1], 'type': entity[0], 'start': speech_result_start['start'],
                             'end': end, 'conf': 1})
@@ -127,6 +130,7 @@ class SpaCyResultsProcessor:
         for chunk in chunk_results:
             speech_result_start = self.find_speech_result(chunk[2])
             speech_result_end = self.find_speech_result(chunk[3] - 1)
+            # Set a lower limit of 2 seconds for each result to be displayed as a subtitle
             end = speech_result_start['start'] + max(speech_result_end['end'] - speech_result_start['start'], 2)
             results.append({'word': chunk[0], 'head': chunk[1], 'start': speech_result_start['start'],
                             'end': end, 'conf': 1})
@@ -139,7 +143,9 @@ class SpaCyNaturalLanguageProcessor:
     Run the SpaCy model
     """
     def __init__(self, model):
+        # Load model for POS tagging, NER and dependency parsing
         self.nlp = spacy.load(model)
+        # Create a phrase matcher
         self.matcher = PhraseMatcher(self.nlp.vocab)
         patterns = [self.nlp.make_doc(text) for text in pipeline_config.terms]
         self.matcher.add("TerminologyList", None, *patterns)
@@ -148,7 +154,7 @@ class SpaCyNaturalLanguageProcessor:
     def get_spacy_results_processor(self, sentence, speech_results):
         return SpaCyResultsProcessor(sentence, self.nlp, speech_results, self.matcher)
 
-    def process_stopwords(self, speech_results, pos_results):
+    def process_spurious_words(self, speech_results, pos_results):
         """
         Find stop words or interjections which are not surrounded by any other results and remove them.  This fixes the
         speech in air conditioner problem
@@ -181,7 +187,7 @@ class SpaCyNaturalLanguageProcessor:
 
 
 if __name__ == '__main__':
-    wrds = "Jack switch on the air conditioner even though it is loud it is the middle of summer"
+    wrds = "Jack walked to the park on the cold winter morning"
     nlp = SpaCyNaturalLanguageProcessor(pipeline_config.spacy_model)
     processor = nlp.get_spacy_results_processor(wrds, [])
     print(processor.pos_tag())

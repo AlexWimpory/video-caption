@@ -17,13 +17,13 @@ import librosa.display
 filename = 'gun'
 y, sr = librosa.load(f'data\\{filename}.wav')
 
-# Let's make and display a mel-scaled power (energy-squared) spectrogram
+# Display the mel-scaled power (energy-squared) spectrogram
 S = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
 
-# Convert to log scale (dB). We'll use the peak power as reference.
+# Convert to log scale (dB) useing the peak power as reference.
 log_S = librosa.amplitude_to_db(S, ref=np.max)
 
-# Next, we'll extract the Mel-frequency cepstral coefficients (MFCCs)
+# Extract the Mel-frequency cepstral coefficients (MFCCs)
 mfcc = librosa.feature.mfcc(y=y, sr=sr)
 print(mfcc.shape)
 

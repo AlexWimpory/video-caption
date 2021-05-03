@@ -1,11 +1,11 @@
-from audio_processing.ground_truth_processor import GroundtruthReader
 from audio_speech.speech_recogniser import SpeechRecogniser
+from ground_truth.ground_truth_processor import GroundtruthReader
+from utils.add_noise import add_awgn, add_real_world_noise
 from utils.levenshtein import levenshtein
 import matplotlib.pyplot as plt
 import os
 import csv
 import time
-from audio_utils.utils import generate_silence
 from utils.file_utils import apply_to_path
 
 # Initialise the speech recogniser model
@@ -82,15 +82,15 @@ def calculate_accuracy(filename):
 
 def compare_noise(groundtruth, filename, snr_start, increment, snr_end):
     """Adds AWGN to a file and records the model output and Levenshtein distance for each value of SNR"""
-    with open('../../random_data/speech/data/speech_results_noise.txt', 'w', newline='') as fout:
+    with open('speech_results_noise_2.txt', 'w', newline='') as fout:
         writer = csv.writer(fout)
         base_filename = os.path.splitext(os.path.basename(filename))[0]
         gtp = GroundtruthReader(groundtruth)
         from_groundtruth = gtp.lookup_filename(base_filename)
         writer.writerow([None, 0, from_groundtruth])
         while snr_start >= snr_end:
-            generate_silence.add_awgn(filename, snr_start)
-            results = speech_recogniser.process_file('data/speech_noisy_fixed.wav')
+            add_awgn(filename, snr_start)
+            results = speech_recogniser.process_file('speech_noisy_fixed.wav')
             words = [result['word'] for result in results]
             from_audio = ' '.join(words).upper()
             lev = levenshtein(from_audio, from_groundtruth)
@@ -102,7 +102,7 @@ def plot_snr_vs_lev():
     """Plots a grpah showing the SNR vs the Leveshtein distance"""
     x = []
     y = []
-    with open('../../random_data/speech/data/speech_results_noise.txt', 'r') as csvfile:
+    with open('speech_results_noise.txt', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         next(csvfile)
         for row in plots:
@@ -113,7 +113,7 @@ def plot_snr_vs_lev():
     plt.ylabel('Levenshtein Distance')
     plt.title('SNR vs Levenshtein Distance')
     plt.grid()
-    plt.savefig('data/snr_vs_levenshtein.png')
+    plt.savefig('snr_vs_levenshtein.png')
     plt.show()
 
 
@@ -122,25 +122,25 @@ if __name__ == '__main__':
     # compare_speech_groundtruth = partial(compare_speech, '../audio_speech/data/librispeech_groundtruth.csv')
     # apply_to_path(compare_speech_groundtruth, 'D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198', '.wav')
 
-    # Write speech test
-    start = time.time()
-    # write_speech_results('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198',
+    # # Write speech test
+    # start = time.time()
+    # # write_speech_results('D:\\Audio Speech\\LibriSpeech\\train-clean-100\\19\\198',
+    # #                      '.wav',
+    # #                      '../audio_speech/data/librispeech_groundtruth.csv')
+    # write_speech_results('D:\\TED\\CKWilliams_2001-480p.wav',
     #                      '.wav',
-    #                      '../audio_speech/data/librispeech_groundtruth.csv')
-    write_speech_results('D:\\TED\\CKWilliams_2001-480p.wav',
-                         '.wav',
-                         'D:\\TED\\CKWilliams_2001-480p-Transcipt_groundtruth.csv')
-    end = time.time()
-    print(end - start)
-
-    # Format speech file
-    format_speech_csv('../../random_data/speech/data/speech_results.csv')
-    calculate_accuracy('../../random_data/speech/data/speech_results.csv')
+    #                      'D:\\TED\\CKWilliams_2001-480p-Transcipt_groundtruth.csv')
+    # end = time.time()
+    # print(end - start)
+    #
+    # # Format speech file
+    # format_speech_csv('../../random_data/speech/data/speech_results.csv')
+    # calculate_accuracy('../../random_data/speech/data/speech_results.csv')
 
     # # Noise test
-    # compare_noise('../audio_speech/data/librispeech_joined_groundtruth.csv',
-    #               'data/joined.wav',
-    #               snr_start = 30,
+    # compare_noise('joined_groundtruth.csv',
+    #               'joined.wav',
+    #               snr_start = 25,
     #               increment = 1,
-    #               snr_end = 29)
-    # plot_snr_vs_lev()
+    #               snr_end = -25)
+    plot_snr_vs_lev()

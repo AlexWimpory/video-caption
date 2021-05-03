@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 /.idea
 /random_data/
+/out/test/
+/out/test_2/

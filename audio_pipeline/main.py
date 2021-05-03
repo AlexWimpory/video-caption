@@ -1,6 +1,6 @@
 from audio_pipeline.logging_config import get_logger
 from audio_pipeline import pipeline_config
-from audio_pipeline.audio_sounds.sound_recogniser import FeatureRecogniser, process_overlap
+from audio_pipeline.audio_sounds.sound_recogniser import SoundRecogniser, process_overlap
 from audio_pipeline.audio_processing.audio_extractor import extract_audio
 from audio_pipeline.audio_processing.subtitle_utils import *
 from audio_pipeline.audio_speech.natural_language_processor import SpaCyNaturalLanguageProcessor
@@ -20,7 +20,7 @@ def main(path):
     audio_file = extract_audio(path, pipeline_config.audio_target_dir)
 
     # Generate sound classification results and speech recogniser results
-    sound_results = FeatureRecogniser().process_file(audio_file)
+    sound_results = SoundRecogniser().process_file(audio_file)
     sound_results = process_overlap(sound_results)
     speech_results = SpeechRecogniser().process_file(audio_file)
 
@@ -34,7 +34,7 @@ def main(path):
     ner_results = processor.process_speech_results_ner()
     ner_results.extend(custom_processor.process_speech_results_ner())
     match_results = processor.process_speech_results_match()
-    speech_results = nlp.process_stopwords(speech_results, chunk_results)
+    speech_results = nlp.process_spurious_words(speech_results, chunk_results)
 
     # Add Speech recogniser results, sound classification results and NLP results to a subtitle file
     subs_1 = save_to_subtitles(speech_results,
@@ -67,4 +67,4 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main('../out/demo_13.mp4')
+    main('../out/demo_6.mp4')
